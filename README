@@ -1,0 +1,29 @@
+# prggmr matrix
+This is the badass matrix rain effect for the command line.
+
+![Matrix](image.png)
+
+## Requirements
+* prggmr >= 0.3.1
+* php >= 5.4.0
+
+## Running
+
+To run simply use the command
+
+    prggmr matrix.php
+
+## Performance
+
+This is a pretty damn resource intensive my tests reveal the following,
+
+Note this was done on a T7200 2.0GHZ machine which is outdated in processor terms ... 
+you might get better results :)
+
+COLSxROWS
+
+* 80x30
+20% CPU Usage
+
+* 170x60
+45% CPU Usage
