@@ -42,7 +42,7 @@ interval(function($rows, $cols, $range){
         // white head
         $this->cols = [];
         // welcome message
-        $this->message = str_split('Welcome to prggmr library matrix ... enjoy');
+        $this->message = str_split('Welcome to the prggmr library matrix ... enjoy');
         $this->msg_out = '';
     }
     for ($i=0;$i<=$cols;$i++) {
@@ -68,6 +68,9 @@ interval(function($rows, $cols, $range){
                 if ($this->cols[$x] == $y) {
                     $color = '37';
                     $this->cols[$x]++;
+                    if ($newchar != " ") {
+                        $newchar = get_char(false);
+                    }
                 } else {
                     $force = false;
                     $color = '32';
@@ -107,4 +110,4 @@ interval(function($rows, $cols, $range){
     }
     echo $output;
     $this->iteration++;
-}, 50, [$rows, $cols, $range]);
+}, 85, [$rows, $cols, $range]);

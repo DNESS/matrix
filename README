@@ -1,7 +1,7 @@
 # prggmr matrix
 This is the badass matrix rain effect for the command line.
 
-![Matrix](image.png)
+![Matrix](https://github.com/nwhitingx/matrix/raw/master/image.png)
 
 ## Requirements
 * prggmr >= 0.3.1
@@ -23,7 +23,20 @@ you might get better results :)
 COLSxROWS
 
 * 80x30
+15% CPU Usage
+
+* 100*50
 20% CPU Usage
 
-* 170x60
-45% CPU Usage
+* 175x65
+35% CPU Usage
+
+## How it works
+
+It's simple really ... I create a very large array containing each node in a box,
+keep track of what nodes must be a space, a white color and a regular char.
+
+For movement I simply extract the previous into the current, keep track of the
+movement positions, add some randomness and I have movement.
+
+Put it all together in an interval, time it right ... and thats it!
