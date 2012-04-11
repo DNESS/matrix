@@ -14,23 +14,26 @@ define('MATRIX_MASTERMIND', 'Nickolas Whiting');
 $usage = "usage: prggmr [options...] matrix.php
 
 Current options:
-  -c/--color    Color [red,green,gold,blue,purple,teal]
+  -c/--color    Color [default,grey,red,green,gold,blue,purple,teal] Default: Green
   -f/--fps      Display frame rate
+  -i/--interval The matrix speed. Default = 85
   -h/--help     Show this help message.
-  -s/--symbols  Symbols to use in the matrix
+  -s/--symbols  Symbols to use in the matrix.
   -t/--time     Length of time to run in milliseconds.
   -v/--version  Displays current matrix version.
   -z            Color shift
 ";
 
 $options = getopt(
-    'qwert:yuiopasdfghjklzxc:vbnm',
+    'qwert:yui:opas:dfghjklzxc:vbnm',
     array(
-        'help', 'version', 'time:', 'color:', 'symbols:'
+        'help', 'version', 'time:', 'color:', 'symbols:', 'speed:'
     )
 );
 
 $color_codes = [
+    'default' => '1',
+    'grey' => '30',
     'red' => '31',
     'green' => '32',
     'gold' => '33',
@@ -42,8 +45,9 @@ $color_codes = [
 $tmp = $argv;
 $fps = false;
 $ttr = null;
-$color_use = '32';
+$color_use = '3';
 $shift = false;
+$speed = 85;
 $symbols = array_merge(str_split('~!@#$%^&*()_+-=[]\{}|<>?,./;\':'), range('A', 'Z'));
 // parse args and check for options
 foreach ($options as $_i => $_arg) {
@@ -65,10 +69,20 @@ foreach ($options as $_i => $_arg) {
             }
             $ttr = $_arg + 0;
             break;
+        case 'i':
+        case 'speed':
+            if (false === $_arg || !is_int($_arg + 0)) {
+                exit("invalid option 'i'\n".$usage);
+            }
+            $speed = $_arg + 0;
+            break;
         case 's':
         case 'symbols':
+            if (false === $_arg || !is_string($_arg)) {
+                exit("invalid option 's'\n".$usage);
+            }
             $symbols = str_split($_arg);
-            if (!is_array($symbols)) exit("invalid symbols");
+            if (!is_array($symbols) || count($symbols) == 0) exit("invalid symbols");
             break;
         case 'h':
         case 'help':
@@ -76,7 +90,8 @@ foreach ($options as $_i => $_arg) {
             break;
         case 'v':
         case 'version':
-            exit("prggmr matrix version ".MATRIX_VERSION.PHP_EOL."By: ".MATRIX_MASTERMIND);
+            print("prggmr matrix version ".MATRIX_VERSION.PHP_EOL."By: ".MATRIX_MASTERMIND.PHP_EOL);
+            exit;
             break;
         case 'f':
         case 'fps':
@@ -112,7 +127,7 @@ if ($shift) {
 interval(function($color_use, $color_codes){
     global $color_use;
     $color_use = $color_codes[array_rand($color_codes)];
-}, 85, [$color_use, $color_codes]);
+}, $speed, [$color_use, $color_codes]);
 }
 
 function get_char($space = true) {
@@ -148,7 +163,7 @@ interval(function($rows, $cols, $fps){
         // white head
         $this->cols = [];
         // welcome message
-        $this->message = str_split('Loading the matrix');
+        $this->message = str_split('Welcome to the matrix '.MATRIX_VERSION.' by '.MATRIX_MASTERMIND);
         $this->msg_out = '';
     }
     for ($i=0;$i<=$cols;$i++) {
@@ -195,7 +210,8 @@ interval(function($rows, $cols, $fps){
         }
 
     }
-    if ($this->iteration >= count($this->message) + 3) {
+    // Load the matrix
+    if ($this->iteration >= ($rows + count($this->message))) {
         $output = "";
         for ($y = 0; $y <= $rows - 1; $y++) {
             if ($fps && $y == $rows - 1) { 
@@ -210,18 +226,25 @@ interval(function($rows, $cols, $fps){
             $output .= PHP_EOL;
         }
     } else {
-        if ($this->iteration >= count($this->message)) {
-            $this->msg_out .= get_color('.');
-        } else {
+        if ($this->iteration <= count($this->message)) {
             $this->msg_out .= get_color($this->message[$this->iteration]); 
+        } else {
+            $this->msg_out .= get_color(".");
         }
-        $output = $this->msg_out;
-        for ($y = 0; $y <= $rows - 2; $y++) {
-            $output .= str_repeat(" ", ($y == 0) ? $cols - strlen($this->msg_out) : $cols);
+        $float = (($this->iteration + 1) / (count($this->message) + ($rows)));
+        $percentage = round($float * 100, 0);
+        $output = $this->msg_out . PHP_EOL . get_color("$percentage% [");
+        $bar_width = $cols - 10;
+        $bar_count = round($bar_width * $float, 0);
+        $output .= str_repeat(get_color("="), $bar_count);
+        $output .= str_repeat(" ", $bar_width - $bar_count);
+        $output .= get_color("]");
+        for ($y = 0; $y <= $rows - 4; $y++) {
+            $output .= str_repeat(" ", $cols);
             $output .= PHP_EOL;
         }
     }
     $this->last_render_time = $start;
     echo $output;
     $this->iteration++;
-}, 85, [$rows, $cols, $fps]);
+}, $speed, [$rows, $cols, $fps]);

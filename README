@@ -13,6 +13,17 @@ To run simply use the command
 
     prggmr matrix.php
 
+## Options
+
+    -c/--color    Color [default,grey,red,green,gold,blue,purple,teal]
+    -f/--fps      Display frame rate
+    -i/--interval The matrix speed. Default = 85
+    -h/--help     Show this help message.
+    -s/--symbols  Symbols to use in the matrix.
+    -t/--time     Length of time to run in milliseconds.
+    -v/--version  Displays current matrix version.
+    -z            Color shift
+
 ## Performance
 
 This is a pretty damn resource intensive my tests reveal the following,
