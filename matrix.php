@@ -5,7 +5,7 @@
  * that can be found in the LICENSE file.
  */
 
-define('MATRIX_VERSION', '0.1.1');
+define('MATRIX_VERSION', '0.1.2');
 define('MATRIX_MASTERMIND', 'Nickolas Whiting');
 
 /**
