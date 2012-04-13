@@ -11,7 +11,7 @@ define('MATRIX_MASTERMIND', 'Nickolas Whiting');
 /**
  * The fucking matrix ... this shit is awesome.
  */
-$usage = "usage: prggmr [options...] matrix.php
+$usage = "usage: pmatrix [fhvz] [:cimst]
 
 Current options:
   -c/--color    Color [default,grey,red,green,gold,blue,purple,teal] Default: Green

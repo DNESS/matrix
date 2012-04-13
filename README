@@ -7,22 +7,20 @@ This is the badass matrix rain effect for the command line.
 * prggmr >= 0.3.1
 * php >= 5.4.0
 
-## Running
+## Usage
 
-To run simply use the command
+    usage: pmatrix [fhvz] [:cimst]
 
-    prggmr matrix.php
-
-## Options
-
-    -c/--color    Color [default,grey,red,green,gold,blue,purple,teal]
-    -f/--fps      Display frame rate
-    -i/--interval The matrix speed. Default = 85
-    -h/--help     Show this help message.
-    -s/--symbols  Symbols to use in the matrix.
-    -t/--time     Length of time to run in milliseconds.
-    -v/--version  Displays current matrix version.
-    -z            Color shift
+    Current options:
+      -c/--color    Color [default,grey,red,green,gold,blue,purple,teal] Default: Green
+      -f/--fps      Display frame rate
+      -i/--speed    The matrix speed. Default = 85
+      -h/--help     Show this help message.
+      -m/--message  Use the given message on startup.
+      -s/--symbols  Symbols to use in the matrix.
+      -t/--time     Length of time to run in milliseconds.
+      -v/--version  Displays current matrix version.
+      -z            Color shift
 
 ## Performance
 
