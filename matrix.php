@@ -16,8 +16,9 @@ $usage = "usage: prggmr [options...] matrix.php
 Current options:
   -c/--color    Color [default,grey,red,green,gold,blue,purple,teal] Default: Green
   -f/--fps      Display frame rate
-  -i/--interval The matrix speed. Default = 85
+  -i/--speed    The matrix speed. Default = 85
   -h/--help     Show this help message.
+  -m/--message  Use the given message on startup.
   -s/--symbols  Symbols to use in the matrix.
   -t/--time     Length of time to run in milliseconds.
   -v/--version  Displays current matrix version.
@@ -25,9 +26,10 @@ Current options:
 ";
 
 $options = getopt(
-    'qwert:yui:opas:dfghjklzxc:vbnm',
+    'qwert:yui:opas:dfghjklzxc:vbnm:',
     array(
-        'help', 'version', 'time:', 'color:', 'symbols:', 'speed:'
+        'help', 'version', 'time:', 'color:', 'symbols:', 'speed:',
+        'message:'
     )
 );
 
@@ -75,6 +77,15 @@ foreach ($options as $_i => $_arg) {
                 exit("invalid option 'i'\n".$usage);
             }
             $speed = $_arg + 0;
+            break;
+        case 'm':
+        case 'message':
+            if (false === $_arg || !is_string($_arg)) {
+                exit("invalid option 'm'\n".$usage);
+            }
+            echo $_arg;
+            exit;
+            define('MESSAGE', $_arg);
             break;
         case 's':
         case 'symbols':
@@ -139,18 +150,20 @@ function get_char($space = true) {
     return $char;
 }
 
+if (!defined('MESSAGE')) {
+    define('MESSAGE', "Welcome to the prggmr matrix");
+}
+
 if (null !== $ttr) {
     timeout(function(){
         prggmr_shutdown();
     }, $ttr);
 }
-// Columns
-$cols = exec('tput cols');
-// Rows
-$rows = exec('tput lines');
 // Custom Event
-interval(function($rows, $cols, $fps){
+interval(function($fps){
     global $color_use;
+    $cols = exec('tput cols');
+    $rows = exec('tput lines');
     if (!isset($this->matrix)) {
         // Count
         $this->iteration = 0;
@@ -163,7 +176,8 @@ interval(function($rows, $cols, $fps){
         // white head
         $this->cols = [];
         // welcome message
-        $this->message = str_split('Welcome to the matrix '.MATRIX_VERSION.' by '.MATRIX_MASTERMIND);
+        $this->message = str_split(MESSAGE);
+        var_dump($this->message);
         $this->msg_out = '';
     }
     for ($i=0;$i<=$cols;$i++) {
@@ -247,4 +261,4 @@ interval(function($rows, $cols, $fps){
     $this->last_render_time = $start;
     echo $output;
     $this->iteration++;
-}, $speed, [$rows, $cols, $fps]);
+}, $speed, [$fps]);
