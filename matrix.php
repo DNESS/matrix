@@ -135,7 +135,7 @@ function get_color($char, $color = null) {
 }
 
 if ($shift) {
-interval(function($color_use, $color_codes){
+prggmr\interval(function($color_use, $color_codes){
     global $color_use;
     $color_use = $color_codes[array_rand($color_codes)];
 }, $speed, [$color_use, $color_codes]);
@@ -151,16 +151,16 @@ function get_char($space = true) {
 }
 
 if (!defined('MESSAGE')) {
-    define('MESSAGE', "Welcome to the prggmr matrix");
+    define('MESSAGE', "Loading the matrix");
 }
 
 if (null !== $ttr) {
-    timeout(function(){
-        prggmr_shutdown();
+    prggmr\timeout(function(){
+        prggmr\prggmr_shutdown();
     }, $ttr);
 }
 // Custom Event
-interval(function($fps){
+prggmr\interval(function($fps){
     global $color_use;
     $cols = exec('tput cols');
     $rows = exec('tput lines');
@@ -177,7 +177,6 @@ interval(function($fps){
         $this->cols = [];
         // welcome message
         $this->message = str_split(MESSAGE);
-        var_dump($this->message);
         $this->msg_out = '';
     }
     for ($i=0;$i<=$cols;$i++) {
@@ -222,7 +221,6 @@ interval(function($fps){
                 }
             }
         }
-
     }
     // Load the matrix
     if ($this->iteration >= ($rows + count($this->message))) {
