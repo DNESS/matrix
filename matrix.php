@@ -83,8 +83,6 @@ foreach ($options as $_i => $_arg) {
             if (false === $_arg || !is_string($_arg)) {
                 exit("invalid option 'm'\n".$usage);
             }
-            echo $_arg;
-            exit;
             define('MESSAGE', $_arg);
             break;
         case 's':
