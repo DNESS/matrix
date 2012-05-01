@@ -19,6 +19,7 @@ Current options:
   -i/--speed    The matrix speed. Default = 85
   -h/--help     Show this help message.
   -m/--message  Use the given message on startup.
+  -r/--modulus  Modulus to use for space between cols. Default: 2
   -s/--symbols  Symbols to use in the matrix.
   -t/--time     Length of time to run in milliseconds.
   -v/--version  Displays current matrix version.
@@ -26,10 +27,10 @@ Current options:
 ";
 
 $options = getopt(
-    'qwert:yui:opas:dfghjklzxc:vbnm:',
+    'qwer:t:yui:opas:dfghjklzxc:vbnm:',
     array(
         'help', 'version', 'time:', 'color:', 'symbols:', 'speed:',
-        'message:'
+        'message:', 'modulus:'
     )
 );
 
@@ -51,6 +52,7 @@ $color_use = '3';
 $shift = false;
 $speed = 85;
 $symbols = array_merge(str_split('~!@#$%^&*()_+-=[]\{}|<>?,./;\':'), range('A', 'Z'));
+$modulus = 2;
 // parse args and check for options
 foreach ($options as $_i => $_arg) {
     switch ($_i) {
@@ -77,6 +79,13 @@ foreach ($options as $_i => $_arg) {
                 exit("invalid option 'i'\n".$usage);
             }
             $speed = $_arg + 0;
+            break;
+        case 'r':
+        case 'modulus':
+            if (false === $_arg || !is_int($_arg + 0)) {
+                exit("invalid option 'r'\n".$usage);
+            }
+            $modulus = $_arg + 0;
             break;
         case 'm':
         case 'message':
@@ -158,7 +167,7 @@ if (null !== $ttr) {
     }, $ttr);
 }
 // Custom Event
-prggmr\interval(function($fps){
+prggmr\interval(function($fps, $modulus){
     global $color_use;
     $cols = exec('tput cols');
     $rows = exec('tput lines');
@@ -208,14 +217,18 @@ prggmr\interval(function($fps){
                     $force = false;
                     $color = $color_use;
                 }
-                $this->matrix[$y][$x] = [$newchar, get_color($newchar, $color)];
-                if ($this->matrix[$y][$x][0] != " ") {
-                    if(rand(0, 10)>=10 && $this->cols[$x] != $y) {
-                        $random = get_char(false);
-                        $this->matrix[$y][$x] = [$random, get_color($random, $color)];
-                    }
+                if ($x % $modulus) {
+                    $this->matrix[$y][$x] = [" ", " "];
                 } else {
-                    $this->cols[$x] = true;
+                    $this->matrix[$y][$x] = [$newchar, get_color($newchar, $color)];
+                    if ($this->matrix[$y][$x][0] != " ") {
+                        if(rand(0, 10)>=10 && $this->cols[$x] != $y) {
+                            $random = get_char(false);
+                            $this->matrix[$y][$x] = [$random, get_color($random, $color)];
+                        }
+                    } else {
+                        $this->cols[$x] = true;
+                    }
                 }
             }
         }
@@ -257,4 +270,4 @@ prggmr\interval(function($fps){
     $this->last_render_time = $start;
     echo $output;
     $this->iteration++;
-}, $speed, [$fps]);
+}, $speed, [$fpsm, $modulus]);
