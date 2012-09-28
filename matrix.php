@@ -5,8 +5,10 @@
  * that can be found in the LICENSE file.
  */
 
-define('MATRIX_VERSION', '0.1.2');
+define('MATRIX_VERSION', '1.0.0');
 define('MATRIX_MASTERMIND', 'Nickolas Whiting');
+
+prggmr\load_module('time');
 
 /**
  * The fucking matrix ... this shit is awesome.
@@ -142,10 +144,10 @@ function get_color($char, $color = null) {
 }
 
 if ($shift) {
-prggmr\interval(function($color_use, $color_codes){
+prggmr\module\time\interval($speed, function() use ($color_codes){
     global $color_use;
     $color_use = $color_codes[array_rand($color_codes)];
-}, $speed, [$color_use, $color_codes]);
+});
 }
 
 function get_char($space = true) {
@@ -162,12 +164,12 @@ if (!defined('MESSAGE')) {
 }
 
 if (null !== $ttr) {
-    prggmr\timeout(function(){
-        prggmr\prggmr_shutdown();
+    prggmr\module\time\timeout(function(){
+        prggmr\shutdown();
     }, $ttr);
 }
 // Custom Event
-prggmr\interval(function($fps, $modulus){
+prggmr\module\time\interval($speed, function() use ($fps, $modulus){
     global $color_use;
     $cols = exec('tput cols');
     $rows = exec('tput lines');
@@ -270,4 +272,4 @@ prggmr\interval(function($fps, $modulus){
     $this->last_render_time = $start;
     echo $output;
     $this->iteration++;
-}, $speed, [$fpsm, $modulus]);
+});
