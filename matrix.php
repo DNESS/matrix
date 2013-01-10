@@ -1,29 +1,29 @@
 <?php
 /**
  * Copyright 2012 Nickolas Whiting. All rights reserved.
- * Use of this source code is governed by the Apache 2 license
+ * Use of matrix source code is governed by the Apache 2 license
  * that can be found in the LICENSE file.
  */
 
-define('MATRIX_VERSION', '1.0.0');
+define('MATRIX_VERSION', '2.0.0');
 define('MATRIX_MASTERMIND', 'Nickolas Whiting');
 
-prggmr\load_module('time');
+import('time');
 
 /**
- * The fucking matrix ... this shit is awesome.
+ * The fucking matrix ... this shit is awesome ... nuff said.
  */
-$usage = "usage: pmatrix [fhvz] [:cimst]
+$usage = "usage: prggmr_matrix [-c|--color][-f|--fps][-i|--interval]
 
 Current options:
   -c/--color    Color [default,grey,red,green,gold,blue,purple,teal] Default: Green
-  -f/--fps      Display frame rate
-  -i/--speed    The matrix speed. Default = 85
+
+  -l/--lps      Display loops per *second
+  -i/--interval How fast to run. Default: 2
   -h/--help     Show this help message.
-  -m/--message  Use the given message on startup.
-  -r/--modulus  Modulus to use for space between cols. Default: 2
+  -m/--message  Print this message on startup.
+  -r/--modulus  Shift for spacing. Default: 2
   -s/--symbols  Symbols to use in the matrix.
-  -t/--time     Length of time to run in milliseconds.
   -v/--version  Displays current matrix version.
   -z            Color shift
 ";
@@ -31,7 +31,7 @@ Current options:
 $options = getopt(
     'qwer:t:yui:opas:dfghjklzxc:vbnm:',
     array(
-        'help', 'version', 'time:', 'color:', 'symbols:', 'speed:',
+        'help', 'version', 'time:', 'color:', 'symbols:', 'interval:',
         'message:', 'modulus:'
     )
 );
@@ -110,7 +110,7 @@ foreach ($options as $_i => $_arg) {
             break;
         case 'v':
         case 'version':
-            print("prggmr matrix version ".MATRIX_VERSION.PHP_EOL."By: ".MATRIX_MASTERMIND.PHP_EOL);
+            print("prggmr_matrix version ".MATRIX_VERSION.PHP_EOL."By: ".MATRIX_MASTERMIND.PHP_EOL);
             exit;
             break;
         case 'f':
@@ -144,12 +144,18 @@ function get_color($char, $color = null) {
 }
 
 if ($shift) {
-prggmr\module\time\interval($speed, function() use ($color_codes){
-    global $color_use;
-    $color_use = $color_codes[array_rand($color_codes)];
-});
+    // Wake every x speed and shift colors
+    time\awake($speed, null_exhaust(function() use ($color_codes){
+        global $color_use;
+        $color_use = $color_codes[array_rand($color_codes)];
+    }), TIME_MILLISECONDS);
 }
 
+/**
+ * Returns 
+ * @param  boolean $space [description]
+ * @return [type]         [description]
+ */
 function get_char($space = true) {
     global $symbols;
     // Characters
@@ -164,54 +170,64 @@ if (!defined('MESSAGE')) {
 }
 
 if (null !== $ttr) {
-    prggmr\module\time\timeout(function(){
-        prggmr\shutdown();
+    time\awake(function(){
+        shutdown();
     }, $ttr);
 }
-// Custom Event
-prggmr\module\time\interval($speed, function() use ($fps, $modulus){
-    global $color_use;
+
+$matrix = new stdClass();
+
+$screen = fopen(STDOUT);
+
+/**
+ * Performs a time awake signal process for creating the matrix,
+ * 
+ * @signal  time\awake
+ */
+time\awake($speed, null_exhaust(function() use (
+        $fps, $modulus, $matrix, $color_use
+    ){
     $cols = exec('tput cols');
     $rows = exec('tput lines');
-    if (!isset($this->matrix)) {
+    if (!isset($matrix->matrix)) {
         // Count
-        $this->iteration = 0;
+        $matrix->iteration = 0;
         // the current matrix
-        $this->matrix = [];
+        $matrix->matrix = [];
         // movement
-        $this->mtx = [];
+        $matrix->mtx = [];
         // spaces
-        $this->lines = [];
+        $matrix->lines = [];
         // white head
-        $this->cols = [];
+        $matrix->cols = [];
         // welcome message
-        $this->message = str_split(MESSAGE);
-        $this->msg_out = '';
+        $matrix->message = str_split(MESSAGE);
+        $matrix->msg_out = '';
     }
     for ($i=0;$i<=$cols;$i++) {
-        if ($this->mtx[$i][0] <= 0) {
-            $this->mtx[$i] = [rand($rows, $rows * 2), (rand(0, 10)>=4)];
+        if ($matrix->mtx[$i][0] <= 0) {
+            $matrix->mtx[$i] = [rand($rows, $rows * 2), (rand(0, 10)>=4)];
         }
-        if ($this->lines[$i][0] <= 0) {
-            $this->lines[$i] = [rand(10, 15), rand(0, 10) >= 6, true];
+        if ($matrix->lines[$i][0] <= 0) {
+            $matrix->lines[$i] = [rand(10, 15), rand(0, 10) >= 6, true];
         }
     }
     $start = milliseconds();
     for ($y = $rows; $y >= 0 ; $y--) {
         for ($x = 0; $x <= $cols - 1; $x++) {
-            $this->mtx[$x][0]--;
-            if (!isset($this->matrix[$y][$x]) || $y == 0) {
-                $this->lines[$x][0]--;
-                $char = ($this->lines[$x][1]) ? get_char(false) : get_char(true);
-                $this->matrix[$y][$x] = [$char, $char];
-            } elseif ($this->mtx[$x][1]) {
-                $newchar = $this->matrix[$y - 1][$x][0];
-                if ($newchar != " " && $this->cols[$x] === true) {
-                    $this->cols[$x] = $y;
+            $matrix->mtx[$x][0]--;
+            if (!isset($matrix->matrix[$y][$x]) || $y == 0) {
+                $matrix->lines[$x][0]--;
+                $char = ($matrix->lines[$x][1]) ? get_char(false) : get_char(true);
+                $matrix->matrix[$y][$x] = [$char, $char];
+            } elseif ($matrix->mtx[$x][1]) {
+                $newchar = $matrix->matrix[$y - 1][$x][0];
+                if ($newchar != " " && $matrix->cols[$x] === true) {
+                    $matrix->cols[$x] = $y;
                 }
-                if ($this->cols[$x] == $y) {
+                if ($matrix->cols[$x] == $y) {
                     $color = '37';
-                    $this->cols[$x]++;
+                    $matrix->cols[$x]++;
                     if ($newchar != " ") {
                         $newchar = get_char(false);
                     }
@@ -220,45 +236,48 @@ prggmr\module\time\interval($speed, function() use ($fps, $modulus){
                     $color = $color_use;
                 }
                 if ($x % $modulus) {
-                    $this->matrix[$y][$x] = [" ", " "];
+                    $matrix->matrix[$y][$x] = [" ", " "];
                 } else {
-                    $this->matrix[$y][$x] = [$newchar, get_color($newchar, $color)];
-                    if ($this->matrix[$y][$x][0] != " ") {
-                        if(rand(0, 10)>=10 && $this->cols[$x] != $y) {
+                    $matrix->matrix[$y][$x] = [$newchar, get_color($newchar, $color)];
+                    if ($matrix->matrix[$y][$x][0] != " ") {
+                        if(rand(0, 10)>=10 && $matrix->cols[$x] != $y) {
                             $random = get_char(false);
-                            $this->matrix[$y][$x] = [$random, get_color($random, $color)];
+                            $matrix->matrix[$y][$x] = [$random, get_color($random, $color)];
                         }
                     } else {
-                        $this->cols[$x] = true;
+                        $matrix->cols[$x] = true;
                     }
                 }
             }
         }
     }
     // Load the matrix
-    if ($this->iteration >= ($rows + count($this->message))) {
+    if ($matrix->iteration >= ($rows + count($matrix->message))) {
         $output = "";
         for ($y = 0; $y <= $rows - 1; $y++) {
             if ($fps && $y == $rows - 1) { 
-                $frate = round((1 / (milliseconds() - $start)) * 1000, 4);
-                $output .= PHP_EOL . get_color(" FPS : $frate", "37", true);
+                $output .= PHP_EOL . $frate . 
+                    xpspl()
+                        ->get_routine()
+                        ->get_idle()
+                        ->get_time_left();
             } else {
-                $xlength = count($this->matrix[$y]);
+                $xlength = count($matrix->matrix[$y]);
                 for ($x = 0;$x != $xlength; $x++ ){
-                    $output .= $this->matrix[$y][$x][1];
+                    $output .= $matrix->matrix[$y][$x][1];
                 }
             }
             $output .= PHP_EOL;
         }
     } else {
-        if ($this->iteration <= count($this->message)) {
-            $this->msg_out .= get_color($this->message[$this->iteration]); 
+        if ($matrix->iteration <= count($matrix->message)) {
+            $matrix->msg_out .= get_color($matrix->message[$matrix->iteration]); 
         } else {
-            $this->msg_out .= get_color(".");
+            $matrix->msg_out .= get_color(".");
         }
-        $float = (($this->iteration + 1) / (count($this->message) + ($rows)));
+        $float = (($matrix->iteration + 1) / (count($matrix->message) + ($rows)));
         $percentage = round($float * 100, 0);
-        $output = $this->msg_out . PHP_EOL . get_color("$percentage% [");
+        $output = $matrix->msg_out . PHP_EOL . get_color("$percentage% [");
         $bar_width = $cols - 10;
         $bar_count = round($bar_width * $float, 0);
         $output .= str_repeat(get_color("="), $bar_count);
@@ -269,7 +288,7 @@ prggmr\module\time\interval($speed, function() use ($fps, $modulus){
             $output .= PHP_EOL;
         }
     }
-    $this->last_render_time = $start;
+    $matrix->last_render_time = $start;
     echo $output;
-    $this->iteration++;
-});
+    $matrix->iteration++;
+}), TIME_MILLISECONDS);
