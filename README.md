@@ -12,14 +12,14 @@ The matrix for your terminal.
 
 ```sh
 
-git clone ~/git@github.com:prggmr/matrix.git .matrix
+git clone git://github.com/prggmr/matrix.git ~/.matrix
 ```
 
 Install to bin.
 
 ```sh
 
-sudo ln -s $HOME/.matrix/matrix /usr/bin/
+sudo ln -s $HOME/.matrix/matrix /usr/bin
 ```
 
 Then run
