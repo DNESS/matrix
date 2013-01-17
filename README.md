@@ -6,7 +6,7 @@ The matrix for your terminal.
 
 ## Requirements
 
-* XPSPL
+* [XPSPL](http://xpspl.prggmr.com/ "XPSPL")
 
 ## Installation
 
