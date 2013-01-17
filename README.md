@@ -8,12 +8,11 @@ The matrix for your terminal.
 
 * XPSPL
 
-## Running
+## Installation
 
 ```sh
 
 git clone ~/git@github.com:prggmr/matrix.git .matrix
-xpspl ~/.matrix/matrix
 ```
 
 Install to bin.
@@ -28,3 +27,7 @@ Then run
 ```sh
 matrix
 ```
+
+## Performance
+
+The matrix currently can run in microsecond time using the standard 80x24 window.
