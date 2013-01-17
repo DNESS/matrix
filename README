@@ -1,51 +1,33 @@
-# prggmr matrix
-This is the badass matrix rain effect for the command line.
+# Matrix
 
-![Matrix](https://github.com/nwhitingx/matrix/raw/master/image.png)
+The matrix for your terminal.
+
+![Matrix](https://github.com/prggmr/matrix/raw/master/image.png)
 
 ## Requirements
-* prggmr >= 0.3.1
-* php >= 5.4.0
 
-## Usage
+* XPSPL
 
-    usage: pmatrix [fhvz] [:cimst]
+## Installation
 
-    Current options:
-      -c/--color    Color [default,grey,red,green,gold,blue,purple,teal] Default: Green
-      -f/--fps      Display frame rate
-      -i/--speed    The matrix speed. Default = 85
-      -h/--help     Show this help message.
-      -m/--message  Use the given message on startup.
-      -s/--symbols  Symbols to use in the matrix.
-      -t/--time     Length of time to run in milliseconds.
-      -v/--version  Displays current matrix version.
-      -z            Color shift
+```sh
+
+git clone ~/git@github.com:prggmr/matrix.git .matrix
+```
+
+Install to bin.
+
+```sh
+
+sudo ln -s $HOME/.matrix/matrix /usr/bin/
+```
+
+Then run
+
+```sh
+matrix
+```
 
 ## Performance
 
-This is a pretty damn resource intensive my tests reveal the following,
-
-Note this was done on a T7200 2.0GHZ machine which is outdated in processor terms ... 
-you might get better results :)
-
-COLSxROWS
-
-* 80x30
-15% CPU Usage
-
-* 100*50
-20% CPU Usage
-
-* 175x65
-35% CPU Usage
-
-## How it works
-
-It's simple really ... I create a very large array containing each node in a box,
-keep track of what nodes must be a space, a white color and a regular char.
-
-For movement I simply extract the previous into the current, keep track of the
-movement positions, add some randomness and I have movement.
-
-Put it all together in an interval, time it right ... and thats it!
+The matrix currently can run in microsecond time using the standard 80x24 window.
