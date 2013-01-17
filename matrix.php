@@ -276,6 +276,7 @@ time\awake($speed, null_exhaust(function() use (
                     } else {
                         $matrix->current = 'Milliseconds : ' . $matrix->current;
                     }
+                    $matrix->current = $matrix->current . ' ' . $cols . 'x' . $rows;
                     $matrix->average = [];
                 }
                 $output .= PHP_EOL . $matrix->current;
