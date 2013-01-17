@@ -8,6 +8,8 @@
 define('MATRIX_VERSION', '2.0.0');
 define('MATRIX_MASTERMIND', 'Nickolas Whiting');
 
+error_reporting('E_ALL');
+
 import('time');
 
 /**
@@ -203,6 +205,10 @@ time\awake($speed, null_exhaust(function() use (
         // welcome message
         $matrix->message = str_split(MESSAGE);
         $matrix->msg_out = '';
+        // average run speed
+        $matrix->average = [];
+        // current average run speed
+        $matrix->current = 0.000000000;
     }
     for ($i=0;$i<=$cols;$i++) {
         if ($matrix->mtx[$i][0] <= 0) {
@@ -255,12 +261,24 @@ time\awake($speed, null_exhaust(function() use (
     if ($matrix->iteration >= ($rows + count($matrix->message))) {
         $output = "";
         for ($y = 0; $y <= $rows - 1; $y++) {
-            if ($fps && $y == $rows - 1) { 
-                $output .= PHP_EOL . $frate . 
-                    xpspl()
-                        ->get_routine()
-                        ->get_idle()
-                        ->get_time_left();
+            if ($fps && $y == $rows - 1) {
+                $matrix->average[] = xpspl()
+                    ->get_routine()
+                    ->get_idle()
+                    ->get_time_left();
+                if (count($matrix->average) >= rand(10, 50)) {
+
+                    $matrix->current = array_sum($matrix->average) / count(
+                        array_filter($matrix->average)
+                    );
+                    if ($matrix->current < 1) {
+                        $matrix->current = 'Microseconds : ' . ($matrix->current * 100);
+                    } else {
+                        $matrix->current = 'Milliseconds : ' . $matrix->current;
+                    }
+                    $matrix->average = [];
+                }
+                $output .= PHP_EOL . $matrix->current;
             } else {
                 $xlength = count($matrix->matrix[$y]);
                 for ($x = 0;$x != $xlength; $x++ ){
