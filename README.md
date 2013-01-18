@@ -30,4 +30,4 @@ matrix
 
 ## Performance
 
-The matrix currently can run in microsecond time using the standard 80x24 window.
+The matrix currently can run in microsecond buffer time using the standard 80x24 window.
