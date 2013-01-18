@@ -30,4 +30,17 @@ matrix
 
 ## Performance
 
-The matrix currently can run in microsecond buffer time using the standard 80x24 window.
+The matrix currently can run within microsecond cycles.
+
+By default the interval is set to 85.
+
+Turn the ```-f``` option on to see the performance stats.
+
+To achieve microsecond cycles simply set the interval ```-i``` to one number +/- the ```AVG Process Time``` and adjust 
+so it stays above negative.
+
+## Memory
+
+There currently exists a memory leak ... somewhere ... maybe you can find it ... 
+
+The leak is rather small and adds rather slowely ... but it exists!!
