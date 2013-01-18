@@ -18,7 +18,7 @@ import('time');
 /**
  * The fucking matrix ... this shit is awesome ... nuff said.
  */
-$usage = "usage: prggmr_matrix [-c|--color][-f|--fps][-i|--interval]
+$usage = "usage: matrix [-c|--color][-f|--fps][-i|--interval]
 
 Current options:
   -c/--color    Color [default,grey,red,green,gold,blue,purple,teal] Default: Green
