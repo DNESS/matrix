@@ -8,10 +8,9 @@
 define('MATRIX_VERSION', '2.0.0');
 define('MATRIX_MASTERMIND', 'Nickolas Whiting');
 
-error_reporting('E_ALL');
 
 // DISABLE HISTORY
-save_signal_history(false);
+set_signal_history(false);
 
 import('time');
 
@@ -125,15 +124,19 @@ foreach ($options as $_i => $_arg) {
         case 'z':
             $shift = true;
             break;
-        default:
-            exit(sprintf(
-                "Unknown option '%s'\n%s",
-                $_i,
-                $usage
-            ));
-            break;
+        // default:
+        //     exit(sprintf(
+        //         "Unknown option '%s'\n%s",
+        //         $_i,
+        //         $usage
+        //     ));
+        //     break;
     }
 };
+
+if (XPSPL_DEBUG) {
+    $fps = true;
+}
 
 function get_color($char, $color = null) {
     global $color_use;
@@ -179,63 +182,70 @@ if (null !== $ttr) {
         shutdown();
     }, $ttr);
 }
-
-$screen = fopen(STDOUT);
+// $screen = fopen(STDOUT, 'w+');
 
 /**
  * Performs a time awake signal process for creating the matrix,
  * 
  * @signal  time\awake
  */
-time\awake($speed, null_exhaust(function() use (
+time\awake($speed, null_exhaust(function($matrix) use (
         $fps, $modulus, $color_use, $speed
     ){
-    if (!isset($this->matrix)) {
+    if (!isset($matrix->matrix)) {
         // rows
-        $this->columns = exec('tput cols');
-        $this->rows = exec('tput lines');
+        $matrix->columns = exec('tput cols');
+        $matrix->rows = exec('tput lines');
         // Count
-        $this->iteration = 0;
+        $matrix->iteration = 0;
         // the current matrix
-        $this->matrix = [];
+        $matrix->matrix = [];
         // movement
-        $this->mtx = [];
+        $matrix->mtx = [];
         // spaces
-        $this->lines = [];
+        $matrix->lines = [];
         // white head
-        $this->cols = [];
+        $matrix->cols = [];
         // welcome message
-        $this->message = str_split(MESSAGE);
-        $this->msg_out = '';
+        $matrix->message = str_split(MESSAGE);
+        $matrix->msg_out = '';
         // average run speed
-        $this->average = [];
+        $matrix->average = [];
         // current average run speed
-        $this->current = 0.0000000000000000000000000000;
+        $matrix->current = 0.0000000000000000000000000000;
     }
-    for ($i=0;$i<=$this->columns;$i++) {
-        if ($this->mtx[$i][0] <= 0) {
-            $this->mtx[$i] = [rand($this->rows, $this->rows * 2), (rand(0, 10)>=4)];
+    for ($i=0;$i<=$matrix->columns;$i++) {
+        if (isset($matrix->mtx[$i][0]) && $matrix->mtx[$i][0] <= 0) {
+            $matrix->mtx[$i] = [rand($matrix->rows, $matrix->rows * 2), (rand(0, 10)>=4)];
         }
-        if ($this->lines[$i][0] <= 0) {
-            $this->lines[$i] = [rand(10, 15), rand(0, 10) >= 6, true];
+        if (isset($matrix->lines[$i][0]) && $matrix->lines[$i][0] <= 0) {
+            $matrix->lines[$i] = [rand(10, 15), rand(0, 10) >= 6, true];
         }
     }
     $start = milliseconds();
-    for ($y = $this->rows; $y >= 0 ; $y--) {
-        for ($x = 0; $x <= $this->columns - 1; $x++) {
-            $this->mtx[$x][0]--;
-            if (!isset($this->matrix[$y][$x]) || $y == 0) {
-                $this->lines[$x][0]--;
-                $char = ($this->lines[$x][1]) ? get_char(false) : get_char(true);
-                $this->matrix[$y][$x] = [$char, $char];
-            } elseif ($this->mtx[$x][1]) {
-                $newchar = $this->matrix[$y - 1][$x][0];
-                if ($newchar != " " && $this->cols[$x] === true) {
-                    $this->cols[$x] = $y;
+    for ($y = $matrix->rows; $y >= 0 ; $y--) {
+        for ($x = 0; $x <= $matrix->columns - 1; $x++) {
+            if (isset($matrix->mtx[$x][0])){
+                --$matrix->mtx[$x][0];
+            } else {
+                $matrix->mtx[$x][0] = $matrix->columns;
+            }
+            if (!isset($matrix->matrix[$y][$x]) || $y == 0) {
+                if (isset($matrix->lines[$x][0])) {
+                    --$matrix->lines[$x][0];
+                } else {
+                    $matrix->lines[$x][0] = $matrix->rows;
                 }
-                if ($this->cols[$x] == $y) {
+                $char = (isset($matrix->lines[$x][1]) && $matrix->lines[$x][1]) ? get_char(false) : get_char(true);
+                $matrix->matrix[$y][$x] = $char;
+            } elseif (isset($matrix->mtx[$x][1]) && $matrix->mtx[$x][1]) {
+                $newchar = $matrix->matrix[$y - 1][$x];
+                if ($newchar != " " && isset($matrix->cols[$x]) && $matrix->cols[$x] === true) {
+                    $matrix->cols[$x] = $y;
+                }
+                if (isset($matrix->cols[$x]) && $matrix->cols[$x] == $y) {
                     $color = '37';
-                    $this->cols[$x]++;
+                    ++$matrix->cols[$x];
                     if ($newchar != " ") {
                         $newchar = get_char(false);
                     }
@@ -244,79 +254,82 @@ time\awake($speed, null_exhaust(function() use (
                     $color = $color_use;
                 }
                 if ($x % $modulus) {
-                    $this->matrix[$y][$x] = [" ", " "];
+                    $matrix->matrix[$y][$x] = " ";
                 } else {
-                    $this->matrix[$y][$x] = [$newchar, get_color($newchar, $color)];
-                    if ($this->matrix[$y][$x][0] != " ") {
-                        if(rand(0, 10)>=10 && $this->cols[$x] != $y) {
+                    $matrix->matrix[$y][$x] = $newchar;
+                    if ($matrix->matrix[$y][$x] != " ") {
+                        if(rand(0, 10)>=10 && $matrix->cols[$x] != $y) {
                             $random = get_char(false);
-                            $this->matrix[$y][$x] = [$random, get_color($random, $color)];
+                            $matrix->matrix[$y][$x] = get_char(false);
                         }
                     } else {
-                        $this->cols[$x] = true;
+                        $matrix->cols[$x] = true;
                     }
                 }
             }
         }
     }
+    $end = milliseconds();
     // Load the matrix
-    if ($this->iteration >= ($this->rows + count($this->message))) {
+    // if ($matrix->iteration >= ($matrix->rows + count($matrix->message))) {
         $output = "";
-        for ($y = 0; $y <= $this->rows - 1; $y++) {
-            if ($fps && $y == $this->rows - 1) {
-                $this->average[] = xpspl()
-                    ->get_routine()
-                    ->get_idle()
-                    ->get_time_left();
-                if (count($this->average) >= rand(10, 50)) {
-
-                    $this->current = array_sum($this->average) / count(
-                        array_filter($this->average)
-                    );
-                    $average = $speed - $this->current;
-                    if ($this->current < 1) {
-                        if ($this->current > 0) {
-                            $this->current = 'Buffer Left (us) : ' . ($this->current * 100);
+        for ($y = 0; $y <= $matrix->rows - 1; $y++) {
+            if ($fps && $y == $matrix->rows - 1) {
+                $matrix->average[] = $start - $end;
+                if (count($matrix->average) >= rand(10, 50)) {
+                    $average = $end - $start;
+                    $matrix->current = $speed - ($end - $start);
+                    if ($matrix->current < 1) {
+                        if ($matrix->current > 0) {
+                            $matrix->current = 'Buffer Left (us) : ' . ($matrix->current * 100);
                         } else {
-                            $this->current = 'Overflow (ms) : ' . $this->current;
+                            $matrix->current = 'Overflow (ms) : ' . $matrix->current;
                         }
                     } else {
-                        $this->current = 'Buffer Left (ms) : ' . $this->current;
+                        $matrix->current = 'Buffer Left (ms) : ' . $matrix->current;
                     }
-                    $this->current = $this->current . PHP_EOL . 'AVG Process Time : '. $average . ' (ms)';
-                    $this->current = $this->current . PHP_EOL . 'Size : ' . $this->columns . 'x' . $this->rows;
-                    $this->average = [];
-                    $this->current = $this->current . PHP_EOL . 'Event : ' . spl_object_hash($this);
-                    $this->current = $this->current . PHP_EOL . 'History : ' . count(signal_history());
+                    $matrix->current = $matrix->current . PHP_EOL . 'Next Proces Time : '. xpspl()
+                    ->get_routine()
+                    ->get_idle()->get_idle()
+                    ->get_time_until() . ' (ms)';
+                    $matrix->current = $matrix->current . PHP_EOL . 'AVG Process Time : '. $average . ' (ms)';
+                    $matrix->current = $matrix->current . PHP_EOL . 'Size : ' . $matrix->columns . 'x' . $matrix->rows;
+                    $matrix->current = $matrix->current . PHP_EOL . 'Event : ' . spl_object_hash($matrix);
+                    $matrix->current = $matrix->current . PHP_EOL . 'History : ' . count(signal_history());
+                    $matrix->average = [];
                 }
-                $output .= PHP_EOL . $this->current;
+                $output .= PHP_EOL . $matrix->current;
             } else {
-                $xlength = count($this->matrix[$y]);
+                $xlength = count($matrix->matrix[$y]);
                 for ($x = 0;$x != $xlength; $x++ ){
-                    $output .= $this->matrix[$y][$x][1];
+                    if (null == $matrix->matrix[$y][$x]) {
+                        $output .= " ";
+                    } else {
+                        $output .= $matrix->matrix[$y][$x];
+                    }
                 }
             }
         }
-    } else {
-        if ($this->iteration <= count($this->message)) {
-            $this->msg_out .= get_color($this->message[$this->iteration]); 
-        } else {
-            $this->msg_out .= get_color(".");
-        }
-        $float = (($this->iteration + 1) / (count($this->message) + ($this->rows)));
-        $percentage = round($float * 100, 0);
-        $output = $this->msg_out . PHP_EOL . get_color("$percentage% [");
-        $bar_width = $this->columns - 10;
-        $bar_count = round($bar_width * $float, 0);
-        $output .= str_repeat(get_color("="), $bar_count);
-        $output .= str_repeat(" ", $bar_width - $bar_count);
-        $output .= get_color("]");
-        for ($y = 0; $y <= $this->rows - 4; $y++) {
-            $output .= str_repeat(" ", $this->columns);
-            $output .= PHP_EOL;
-        }
-    }
-    $this->last_render_time = $start;
+    // } else {
+    //     if ($matrix->iteration <= count($matrix->message)) {
+    //         $matrix->msg_out .= get_color($matrix->message[$matrix->iteration]); 
+    //     } else {
+    //         $matrix->msg_out .= get_color(".");
+    //     }
+    //     $float = (($matrix->iteration + 1) / (count($matrix->message) + ($matrix->rows)));
+    //     $percentage = round($float * 100, 0);
+    //     $output = $matrix->msg_out . PHP_EOL . get_color("$percentage% [");
+    //     $bar_width = $matrix->columns - 10;
+    //     $bar_count = round($bar_width * $float, 0);
+    //     $output .= str_repeat(get_color("="), $bar_count);
+    //     $output .= str_repeat(" ", $bar_width - $bar_count);
+    //     $output .= get_color("]");
+    //     for ($y = 0; $y <= $matrix->rows - 4; $y++) {
+    //         $output .= str_repeat(" ", $matrix->columns);
+    //         $output .= PHP_EOL;
+    //     }
+    // }
+    $matrix->last_render_time = $start;
     echo $output;
-    $this->iteration++;
+    $matrix->iteration++;
 }), TIME_MILLISECONDS);
