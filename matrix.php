@@ -208,12 +208,14 @@ function fill_draw_values()
  */
 function get_last_draw_point($matrix, $x, $y)
 {
-    for ($y;$y<0;$y--) {
-        if ($matrix[$y][$x] != " ") {
-            return $matrix[$y][$x];
+    for ($y;$y>-1;$y--) {
+        if (isset($matrix->matrix[$y][$x]) && !isset($matrix->draw[$y][$x])) {
+            if (mt_rand(0, 100) >= 50) {
+                return get_char();
+            }
+            return $matrix->matrix[$y][$x];
         }
     }
-    return get_char();
 }
 
 /**
@@ -228,19 +230,8 @@ time\awake($speed, null_exhaust(function($matrix) use (
         // rows
         $matrix->columns = exec('tput cols');
         $matrix->rows = exec('tput lines');
-        // Count
-        $matrix->iteration = 0;
         // the current matrix
         $matrix->matrix = [];
-        // movement
-        $matrix->mtx = [];
-        // spaces
-        $matrix->lines = [];
-        // white head
-        $matrix->cols = [];
-        // welcome message
-        $matrix->message = str_split(MESSAGE);
-        $matrix->msg_out = '';
         // average run speed
         $matrix->average = [];
         // current average run speed
@@ -297,7 +288,7 @@ time\awake($speed, null_exhaust(function($matrix) use (
              } else {
                 $matrix->matrix[$y][$x] = (
                     isset($matrix->draw[$y][$x])
-                ) ? " " : get_last_draw_point($matrix->matrix, $x, $y);
+                ) ? "#" : get_last_draw_point($matrix, $x, $y);
             }
         }
     }
@@ -337,9 +328,7 @@ time\awake($speed, null_exhaust(function($matrix) use (
                 $output .= $matrix->matrix[$y][$x];
             }
         }
-        // $output .= PHP_EOL;
+        $output .= PHP_EOL;
     }
-    $matrix->last_render_time = $start;
     echo $output;
-    $matrix->iteration++;
 }), TIME_MILLISECONDS);
