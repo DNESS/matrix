@@ -172,7 +172,7 @@ function get_char($space = null, $char = null) {
     }
     // echo PHP_INT_MAX >> 56;
     // var_dump(!(mt_rand(0, PHP_INT_MAX) << 30));// >> (PHP_INT_MAX >> 65));
-    if ($space || null === $space && mt_rand(0, 10) >= 6) {
+    if ($space || null === $space && mt_rand(0, 10) >= 3) {
         return " ";
     }
     return $symbols[array_rand($symbols)];
@@ -206,14 +206,16 @@ function fill_draw_values()
  *
  * If none is encountered a random get_char is returned.
  */
-function get_last_draw_point($matrix, $x, $y)
-{
-    for ($y;$y>-1;$y--) {
-        if (isset($matrix->matrix[$y][$x]) && !isset($matrix->draw[$y][$x])) {
-            if (mt_rand(0, 100) >= 50) {
-                return get_char();
-            }
-            return $matrix->matrix[$y][$x];
+function get_last_draw_point($matrix, $x, $y) {
+    if ($y === 1) {
+        return $matrix->matrix[0][$x];
+    }
+    for ($i=$y;$i>0;--$i) {
+        if (isset($matrix->matrix[$i][$x]) && !isset($matrix->draw[$i][$x])) {
+            // if (mt_rand(0, 100) >= 50) {
+            //     return get_char();
+            // }
+            return $matrix->matrix[$i][$x];
         }
     }
 }
@@ -278,17 +280,51 @@ time\awake($speed, null_exhaust(function($matrix) use (
                 range(10, 22),
                 range(30, 32)
             ),
+            1 => fill_draw_values(
+                range(1, 11),
+                range(30, 32)
+            ),
+            2 => fill_draw_values(
+                range(5, 6)
+            ),
+            3 => fill_draw_values(
+                range(5, 6)
+            ),
+            4 => fill_draw_values(
+                range(5, 6)
+            ),
+            5 => fill_draw_values(
+                range(5, 6)
+            ),
+            6 => fill_draw_values(
+                range(5, 6)
+            ),
+            7 => fill_draw_values(
+                range(5, 6)
+            ),
+            8 => fill_draw_values(
+                range(1, 11)
+            )
         ];
     }
     $start = milliseconds();
-    for ($y = $matrix->rows; $y >= 0 ; $y--) {
+    for ($y = $matrix->rows; $y >= 0 ; --$y) {
+    // for ($y = 0; $y < $matrix->rows ; ++$y) {
         for ($x = 0; $x <= $matrix->columns; ++$x) {
             if ($y == 0) {
                 $matrix->matrix[$y][$x] = get_char();
              } else {
-                $matrix->matrix[$y][$x] = (
-                    isset($matrix->draw[$y][$x])
-                ) ? "#" : get_last_draw_point($matrix, $x, $y);
+                if (isset($matrix->draw[$y][$x])) {
+                    $matrix->matrix[$y][$x] = '#';    
+                } else {
+                    if (mt_rand(0, 10) > 1) {
+                        if ($matrix->matrix[($y - 1)][$x] == '#') {
+                            $matrix->matrix[$y][$x] = get_char();
+                        } else {
+                            $matrix->matrix[$y][$x] = $matrix->matrix[($y - 1)][$x];
+                        }
+                    }
+                }
             }
         }
     }
