@@ -28,7 +28,7 @@ define('MATRIX_SPACE_CHAR', " ");
 if (XPSPL_DEBUG) {
     $speed = 0;
 } else {
-    $speed = 0;
+    $speed = 85;
 }
 
 $matrix = new matrix\SIG_Matrix($speed);
@@ -43,45 +43,48 @@ signal(
     new matrix\Process()
 );
 
+$down = 15;
+$left = 45;
+
 $matrix->set_draw_coordinates(combine_letter_coordinates(
-    new matrix\letters\I(),
-    new matrix\letters\O(),
-    new matrix\letters\A(),
-    new matrix\letters\N(),
-    new matrix\letters\A()
+    (new matrix\letters\I())->move_down($down)->move_left($left),
+    (new matrix\letters\O())->move_down($down),
+    (new matrix\letters\A())->move_down($down),
+    (new matrix\letters\N())->move_down($down),
+    (new matrix\letters\A())->move_down($down)
 ));
 
 /**
  * Adds a count to the matrix changing the draw coords at random.
  */
-signal(
-    $matrix,
-    null_exhaust(function(matrix\SIG_Matrix $matrix){
-        if (!isset($matrix->count)) {
-            $matrix->count = 0;
-        }
-        ++$matrix->count;
-        if ($matrix->count >= 2) {
-            /*if (mt_rand(0, 10) >= 9) {
-                $cords = [];
-                for ($i = 0; $i < mt_rand(10, $matrix->rows); ++$i) {
-                    $cords[mt_rand(0, $matrix->rows)] = fill_draw_values(
-                        range(mt_rand(0, $matrix->columns), mt_rand(0, $matrix->columns))
-                    );
-                }
-                $matrix->set_draw_coordinates($cords);
-            } else*/if (mt_rand(0, 10) >= 3) {
-                $matrix->set_draw_coordinates(combine_letter_coordinates(
-                    new matrix\letters\I(),
-                    new matrix\letters\O(),
-                    new matrix\letters\A(),
-                    new matrix\letters\N(),
-                    new matrix\letters\A()
-                ));
-            } else {
-                $matrix->set_draw_coordinates([]);
-            }
-            $matrix->count = 0;
-        }
-    })
-);
+// signal(
+//     $matrix,
+//     null_exhaust(function(matrix\SIG_Matrix $matrix){
+//         if (!isset($matrix->count)) {
+//             $matrix->count = 0;
+//         }
+//         ++$matrix->count;
+//         if ($matrix->count >= 2) {
+//             if (mt_rand(0, 10) >= 9) {
+//                 $cords = [];
+//                 for ($i = 0; $i < mt_rand(10, $matrix->rows); ++$i) {
+//                     $cords[mt_rand(0, $matrix->rows)] = fill_draw_values(
+//                         range(mt_rand(0, $matrix->columns), mt_rand(0, $matrix->columns))
+//                     );
+//                 }
+//                 $matrix->set_draw_coordinates($cords);
+//             } elseif (mt_rand(0, 10) >= 3) {
+//                 $matrix->set_draw_coordinates(combine_letter_coordinates(
+//                     new matrix\letters\I(),
+//                     new matrix\letters\O(),
+//                     new matrix\letters\A(),
+//                     new matrix\letters\N(),
+//                     new matrix\letters\A()
+//                 ));
+//             } else {
+//                 $matrix->set_draw_coordinates([]);
+//             }
+//             $matrix->count = 0;
+//         }
+//     })
+// );

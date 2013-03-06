@@ -71,4 +71,22 @@ class Letter {
         }
         return $this;
     }
+
+    /**
+     * Move each letter down x spaces.
+     *
+     * @param  integer  $spaces  Number of spaces to move down.
+     *
+     * @return  object  \matrix\letters\Letter
+     */
+    public function move_down($length)
+    {
+        foreach ($this->_coordinates as $_y => $_x) {
+            foreach ($_x as $__x => $_v) {
+                $this->_coordinates[$_y + $length][$__x] = true;
+                unset($this->_coordinates[$_y][$__x]);
+            }
+        }
+        return $this;
+    }
 }
