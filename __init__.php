@@ -28,8 +28,9 @@ define('MATRIX_SPACE_CHAR', " ");
 if (XPSPL_DEBUG) {
     $speed = 0;
 } else {
-    $speed = 85;
+    $speed = 100;
 }
+
 
 $matrix = new matrix\SIG_Matrix($speed);
 
@@ -46,13 +47,22 @@ signal(
 $down = 15;
 $left = 45;
 
-$matrix->set_draw_coordinates(combine_letter_coordinates(
-    (new matrix\letters\I())->move_down($down)->move_left($left),
-    (new matrix\letters\O())->move_down($down),
-    (new matrix\letters\A())->move_down($down),
-    (new matrix\letters\N())->move_down($down),
-    (new matrix\letters\A())->move_down($down)
-));
+$matrix->set_draw_coordinates(parse_ascii_art('drawfiles/5.txt'));
+
+// $matrix->set_draw_coordinates(combine_letter_coordinates(
+//     (new matrix\letters\I())->move_down($down)->move_left($left),
+//     (new matrix\letters\O())->move_down($down),
+//     (new matrix\letters\A())->move_down($down),
+//     (new matrix\letters\N())->move_down($down),
+//     (new matrix\letters\A())->move_down($down)
+// ));
+
+
+time\awake(5, null_exhaust(function() use ($matrix){
+    $matrix->set_draw_coordinates(parse_ascii_art(
+        dirname(realpath(__FILE__)).'/drawfiles/'.mt_rand(1, 7).'.txt'
+    ));
+}));
 
 /**
  * Adds a count to the matrix changing the draw coords at random.

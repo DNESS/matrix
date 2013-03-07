@@ -42,10 +42,10 @@ class Process extends \XPSPL\Process {
                     $sig->matrix[$y][$x] = get_char();
                  } else {
                     if (isset($sig->draw[$y][$x])) {
-                        $sig->matrix[$y][$x] = MATRIX_DRAW_CHAR;    
+                        $sig->matrix[$y][$x] = $sig->draw[$y][$x];    
                     } else {
                         if (mt_rand(0, 10) > 1) {
-                            if ($sig->matrix[($y - 1)][$x] == MATRIX_DRAW_CHAR ||
+                            if (isset($sig->draw[($y - 1)][$x]) ||
                                 $sig->matrix[($y - 1)][$x] == MATRIX_FADE_CHAR) {
                                 if (mt_rand(0, 10) > 2) {
                                     $sig->matrix[$y][$x] = MATRIX_FADE_CHAR;
@@ -65,7 +65,7 @@ class Process extends \XPSPL\Process {
         }
         $end = milliseconds();
         // Matrix load
-        // @todo Shorten the loop
+        // @todo Shorten the debug loop!!
         $output = "";
         if (XPSPL_DEBUG) {
             $sig->average[] = $start - $end;
@@ -93,6 +93,7 @@ class Process extends \XPSPL\Process {
             }
             $output .= PHP_EOL . $sig->current;
         }
+        // @todo Use ncurses!
         for ($y = 0; $y <= $sig->rows - 1; $y++) {
             for ($x = 0;$x < $sig->columns; $x++ ){
                 $output .= $sig->matrix[$y][$x];

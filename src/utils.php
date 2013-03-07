@@ -36,8 +36,6 @@ function get_char($space = null, $char = null) {
     if (null !== $char) {
         return $char;
     }
-    // echo PHP_INT_MAX >> 56;
-    // var_dump(!(mt_rand(0, PHP_INT_MAX) << 30));// >> (PHP_INT_MAX >> 65));
     if ($space || null === $space && mt_rand(0, 10) >= 3) {
         return MATRIX_SPACE_CHAR;
     }
@@ -99,7 +97,7 @@ function combine_letter_coordinates()
         }
         foreach ($_letter->get_coordinates() as $_y => $_x) {
             foreach ($_x as $_index => $_true) {
-                $return[$_y][$_index] = true;
+                $return[$_y][$_index] = $_letter->get_character();
                 if ($_index > $last_x) {
                     $last_x = $_index;
                 }
@@ -107,4 +105,25 @@ function combine_letter_coordinates()
         }
     }
     return $return;
+}
+
+/**
+ * Parses an ASCII art file into draw coordinates.
+ *
+ * @return  array
+ */
+function parse_ascii_art($filename)
+{
+    $coord = [];
+    $ascii = file_get_contents($filename);
+    $lines = explode("\n", $ascii);
+    foreach ($lines as $_y => $_line) {
+        $array = str_split($_line);
+        foreach ($array as $_x => $_char) {
+            if ($_char != " ") {
+                $coord[$_y][$_x] = $_char;
+            }
+        }
+    }
+    return $coord;
 }

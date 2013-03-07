@@ -20,6 +20,7 @@ class N extends Letter {
      */
     public function __construct()
     {
+        parent::__construct();
         $this->set_coordinates([
             1 => fill_draw_values(
                 range(1, 5),
