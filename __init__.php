@@ -21,8 +21,8 @@ require_once dirname(realpath(__FILE__)).'/src/utils.php';
 set_signal_history(false);
 
 define('MATRIX_DRAW_CHAR', get_color('H'));
-define('MATRIX_COLOR_CHAR', get_color('0'));
-define('MATRIX_FADE_CHAR', get_color('*'));
+define('MATRIX_COLOR_CHAR', '0');
+define('MATRIX_FADE_CHAR', '*');
 define('MATRIX_SPACE_CHAR', " ");
 
 if (XPSPL_DEBUG) {
@@ -47,7 +47,9 @@ signal(
 $down = 15;
 $left = 45;
 
-$matrix->set_draw_coordinates(parse_ascii_art('drawfiles/5.txt'));
+// $matrix->set_draw_coordinates(parse_ascii_art(
+//     'drawfiles/1.txt'
+// ), true);
 
 // $matrix->set_draw_coordinates(combine_letter_coordinates(
 //     (new matrix\letters\I())->move_down($down)->move_left($left),
@@ -58,10 +60,23 @@ $matrix->set_draw_coordinates(parse_ascii_art('drawfiles/5.txt'));
 // ));
 
 
-time\awake(5, null_exhaust(function() use ($matrix){
-    $matrix->set_draw_coordinates(parse_ascii_art(
-        dirname(realpath(__FILE__)).'/drawfiles/'.mt_rand(1, 7).'.txt'
-    ));
+time\awake(3, null_exhaust(function($time) use ($matrix){
+    if (!isset($time->count)) {
+        $time->count = 0;
+    } else {
+        if ($time->count >= 5) {
+            $matrix->set_draw_coordinates(parse_ascii_art(
+                dirname(realpath(__FILE__)).'/drawfiles/'.mt_rand(1, 8).'.txt'
+            ), true);
+        } else {
+            ++$time->count;
+            if ($time->count < 4) {
+                $matrix->set_draw_coordinates(parse_ascii_art(
+                    dirname(realpath(__FILE__)).'/drawfiles/startup/'.$time->count.'.txt'
+                ), true);
+            }
+        }
+    }
 }));
 
 /**

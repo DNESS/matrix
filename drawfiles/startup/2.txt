@@ -1,0 +1,23 @@
+                                         
+bbbbbbbb                                 
+b::::::b                                 
+b::::::b                                 
+b::::::b                                 
+ b:::::b                                 
+ b:::::bbbbbbbbbyyyyyyy           yyyyyyy
+ b::::::::::::::by:::::y         y:::::y 
+ b::::::::::::::::y:::::y       y:::::y  
+ b:::::bbbbb:::::::y:::::y     y:::::y   
+ b:::::b    b::::::by:::::y   y:::::y    
+ b:::::b     b:::::b y:::::y y:::::y     
+ b:::::b     b:::::b  y:::::y:::::y      
+ b:::::b     b:::::b   y:::::::::y       
+ b:::::bbbbbb::::::b    y:::::::y        
+ b::::::::::::::::b      y:::::y         
+ b:::::::::::::::b      y:::::y          
+ bbbbbbbbbbbbbbbb      y:::::y           
+                      y:::::y            
+                     y:::::y             
+                    y:::::y              
+                   y:::::y               
+                  yyyyyyy                

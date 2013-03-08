@@ -72,11 +72,34 @@ class SIG_Matrix extends SIG_Awake {
      * Sets the draw coordinates.
      *
      * @param  array  $coordinates  Coordinate x,y  draw values
+     * @param  boolean  $center  Center in the middle of the screen
      *
      * @return  void
      */
-    public function set_draw_coordinates($coordinates)
+    public function set_draw_coordinates($coordinates, $center = false)
     {
+        if ($center) {
+            $max_x = 0;
+            foreach ($coordinates as $_y => $_xs) {
+                if (max(array_keys($_xs)) > $max_x) {
+                    $max_x = max(array_keys($_xs));
+                }
+            }
+            $move_left = floor(($this->columns - $max_x) / 2);
+            foreach ($coordinates as $_y => $_xs) {
+                $new_x = [];
+                foreach ($_xs as $_x => $_char) {
+                    $new_x[$_x + $move_left] = $_char;
+                }
+                $coordinates[$_y] = $new_x;
+            }
+            $y = floor(($this->rows - end(array_keys($coordinates))) / 2);
+            $new_coordinates = [];
+            foreach ($coordinates as $_y => $_xs) {
+                $new_coordinates[$_y + $y] = $_xs;
+            }
+            $coordinates = $new_coordinates;
+        }
         $this->draw = $coordinates;
         return $this;
     }
