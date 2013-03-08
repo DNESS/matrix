@@ -121,9 +121,46 @@ function parse_ascii_art($filename)
         $array = str_split($_line);
         foreach ($array as $_x => $_char) {
             if ($_char != " ") {
-                $coord[$_y][$_x] = $_char;
+                $coord[$_y][$_x] = get_color($_char);
             }
         }
     }
     return $coord;
+}
+
+/**
+ * Creates an ascii animation from a file.
+ *
+ * @return  array
+ */
+function create_ascii_animation($filename, $interval, $matrix, $instruction = TIME_SECONDS) {
+    import('time');
+    $ascii = file_get_contents($filename);
+    $frames = [];
+    $animations = explode('--------------------------------------------------------------------------------', $ascii);
+    foreach ($animations as $_ascii) {
+        $coord = [];
+        $lines = explode("\n", $_ascii);
+        foreach ($lines as $_y => $_line) {
+            $array = str_split($_line);
+            foreach ($array as $_x => $_char) {
+                if ($_char != " ") {
+                    $coord[$_y][$_x] = get_color($_char);
+                }
+            }
+        }
+        $frames[] = $coord;
+    }
+    time\awake($interval, null_exhaust(function($time) use ($matrix, $frames){
+        if (!isset($time->count)) {
+            $time->count = 0;
+        } else {
+            if ($time->count >= (count($frames) - 1)) {
+                $time->count = 0;
+            } else {
+                ++$time->count;
+            }
+            $matrix->set_draw_coordinates($frames[$time->count], true);
+        }
+    }), $instruction);
 }

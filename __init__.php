@@ -47,9 +47,11 @@ signal(
 $down = 15;
 $left = 45;
 
-// $matrix->set_draw_coordinates(parse_ascii_art(
-//     'drawfiles/1.txt'
-// ), true);
+// create_ascii_animation('drawfiles/animations/globe.txt', 110, $matrix, TIME_MILLISECONDS);
+
+$matrix->set_draw_coordinates(parse_ascii_art(
+    'drawfiles/9.txt'
+), true);
 
 // $matrix->set_draw_coordinates(combine_letter_coordinates(
 //     (new matrix\letters\I())->move_down($down)->move_left($left),
@@ -59,25 +61,43 @@ $left = 45;
 //     (new matrix\letters\A())->move_down($down)
 // ));
 
+// time\awake(125, null_exhaust(function($time) use ($matrix){
+//     if (!isset($time->frame)) {
+//         $time->frame = 1;
+//     } else {
+//         if ($time->frame >= 4) {
+//             --$time->frame;
+//         } else {
+//             if ($time->frame < 1) {
+//                 $time->frame = 1;
+//             } else {
+//                 ++$time->frame;
+//             }
+//         }
+//     }
+//     $matrix->set_draw_coordinates(parse_ascii_art(
+//         dirname(realpath(__FILE__)).'/drawfiles/panda/'.$time->frame.'.txt'
+//     ), true);
+// }), TIME_MILLISECONDS);
 
-time\awake(3, null_exhaust(function($time) use ($matrix){
-    if (!isset($time->count)) {
-        $time->count = 0;
-    } else {
-        if ($time->count >= 5) {
-            $matrix->set_draw_coordinates(parse_ascii_art(
-                dirname(realpath(__FILE__)).'/drawfiles/'.mt_rand(1, 8).'.txt'
-            ), true);
-        } else {
-            ++$time->count;
-            if ($time->count < 4) {
-                $matrix->set_draw_coordinates(parse_ascii_art(
-                    dirname(realpath(__FILE__)).'/drawfiles/startup/'.$time->count.'.txt'
-                ), true);
-            }
-        }
-    }
-}));
+// time\awake(1, null_exhaust(function($time) use ($matrix){
+//     if (!isset($time->count)) {
+//         $time->count = 0;
+//     } else {
+//         if ($time->count >= 5) {
+//             $matrix->set_draw_coordinates(parse_ascii_art(
+//                 dirname(realpath(__FILE__)).'/drawfiles/'.mt_rand(1, 8).'.txt'
+//             ), true);
+//         } else {
+//             ++$time->count;
+//             if ($time->count < 4) {
+//                 $matrix->set_draw_coordinates(parse_ascii_art(
+//                     dirname(realpath(__FILE__)).'/drawfiles/startup/'.$time->count.'.txt'
+//                 ), true);
+//             }
+//         }
+//     }
+// }));
 
 /**
  * Adds a count to the matrix changing the draw coords at random.

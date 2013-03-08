@@ -14,9 +14,9 @@ list($width, $height) = getimagesize($file);
 $scale = 10;
  
 $chars = array(
-' ', '\'', '.', ':',
-'|', 'T', 'X', '0',
-'#',
+    'P', '\'', '.', ' ',
+    ' ', '8', ' ', 'T',
+    '#',
 );
  
 $chars = array_reverse($chars);
@@ -24,13 +24,13 @@ $chars = array_reverse($chars);
 $c_count = count($chars);
  
 for($y = 0; $y <= $height - $scale - 1; $y += $scale) {
-for($x = 0; $x <= $width - ($scale / 2) - 1; $x += ($scale / 2)) {
-$rgb = imagecolorat($img, $x, $y);
-$r = (($rgb >> 16) & 0xFF);
-$g = (($rgb >> 8) & 0xFF);
-$b = ($rgb & 0xFF);
-$sat = ($r + $g + $b) / (255 * 3);
-echo $chars[ (int)( $sat * ($c_count - 1) ) ];
-}
-echo PHP_EOL;
+    for($x = 0; $x <= $width - ($scale / 2) - 1; $x += ($scale / 2)) {
+        $rgb = imagecolorat($img, $x, $y);
+        $r = (($rgb >> 16) & 0xFF);
+        $g = (($rgb >> 8) & 0xFF);
+        $b = ($rgb & 0xFF);
+        $sat = ($r + $g + $b) / (255 * 3);
+        echo $chars[ (int)( $sat * ($c_count - 1) ) ];
+    }
+    echo PHP_EOL;
 }

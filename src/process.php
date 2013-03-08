@@ -94,7 +94,8 @@ class Process extends \XPSPL\Process {
             $output .= PHP_EOL . $sig->current;
         }
         // @todo Use ncurses!
-        for ($y = 0; $y <= $sig->rows - 1; $y++) {
+        $c = (!XPSPL_DEBUG) ? $sig->rows - 1 : ($sig->rows - 10);
+        for ($y = 0; $y <= $c; $y++) {
             for ($x = 0;$x < $sig->columns; $x++ ){
                 $output .= $sig->matrix[$y][$x];
             }
