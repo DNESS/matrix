@@ -8,6 +8,7 @@
 define('MATRIX_VERSION', '2.0.0');
 define('MATRIX_MASTERMIND', 'Nickolas Whiting');
 
+
 if (!defined('MATRIX_PATH')) {
     define('MATRIX_PATH', dirname(realpath(__FILE__)));
 }
@@ -16,7 +17,7 @@ set_include_path(
     get_include_path()
 );
 
-require_once dirname(realpath(__FILE__)).'/src/utils.php';
+require_once dirname(realpath(__FILE__)).'/utils.php';
 
 set_signal_history(false);
 
@@ -26,7 +27,7 @@ define('MATRIX_FADE_CHAR', '*');
 define('MATRIX_SPACE_CHAR', " ");
 
 if (XPSPL_DEBUG) {
-    $speed = 0;
+    $speed = 1;
 } else {
     $speed = 100;
 }
@@ -47,11 +48,35 @@ signal(
 $down = 15;
 $left = 45;
 
-// create_ascii_animation('drawfiles/animations/globe.txt', 110, $matrix, TIME_MILLISECONDS);
+import('network');
 
-$matrix->set_draw_coordinates(parse_ascii_art(
-    'drawfiles/9.txt'
-), true);
+$server = network\connect('0.0.0.0', ['port' => '1337']);
+$server->on_connect(null_exhaust(function(network\SIG_Connect $sig) use ($matrix){
+    $std = new stdClass();
+    $std->rows = $matrix->rows;
+    $std->cols = $matrix->columns;
+    $std->time = $matrix->get_time();
+    $sig->socket->write(json_encode($std));
+    $sig->socket->read();
+}));
+$server->on_read(null_exhaust(function(network\SIG_Read $sig_read) use ($matrix) {
+    $read = trim($sig_read->socket->read());
+    if (strlen($read) > 10) {
+        $matrix->set_draw_coordinates(parse_ascii_art($read, false), true);
+    }
+}));
+$server->on_disconnect(null_exhaust(function(network\SIG_Disconnect $sig) use ($matrix) {
+    $socket = intval($sig_read->socket);
+    if (isset($matrix->neros[$socket])) {
+        unset($matrix->neros[$socket]);
+    }
+}));
+
+// create_ascii_animation('drawfiles/animations/stealth.txt', 110, $matrix, null, TIME_MILLISECONDS);
+
+// $matrix->set_draw_coordinates(parse_ascii_art(
+//     'drawfiles/9.txt'
+// ), true);
 
 // $matrix->set_draw_coordinates(combine_letter_coordinates(
 //     (new matrix\letters\I())->move_down($down)->move_left($left),
@@ -80,24 +105,32 @@ $matrix->set_draw_coordinates(parse_ascii_art(
 //     ), true);
 // }), TIME_MILLISECONDS);
 
-// time\awake(1, null_exhaust(function($time) use ($matrix){
+// time\awake(25, null_exhaust(function($time) use ($matrix){
 //     if (!isset($time->count)) {
+//         $time->animation = 0;
+//         $time->animations = ['globe'];
 //         $time->count = 0;
 //     } else {
 //         if ($time->count >= 5) {
-//             $matrix->set_draw_coordinates(parse_ascii_art(
-//                 dirname(realpath(__FILE__)).'/drawfiles/'.mt_rand(1, 8).'.txt'
-//             ), true);
+//             $server = network\connect('0.0.0.0', ['port' => '1337']);
+//             $server->on_connect(null_exhaust(function($sig){
+//                 $sig->socket->write('START THE MATRIX STREAM');
+//                 $sig->socket->read();
+//             }));
+//             $server->on_read(null_exhaust(function(network\SIG_Read $sig_read) use ($matrix) {
+//                 $matrix->set_draw_coordinates(parse_ascii_art($sig_read->socket->read()), true);
+//             }));
+//             delete_signal($time);
 //         } else {
 //             ++$time->count;
-//             if ($time->count < 4) {
+//             if ($time->count < 100) {
 //                 $matrix->set_draw_coordinates(parse_ascii_art(
 //                     dirname(realpath(__FILE__)).'/drawfiles/startup/'.$time->count.'.txt'
 //                 ), true);
 //             }
 //         }
 //     }
-// }));
+// }), TIME_MILLISECONDS);
 
 /**
  * Adds a count to the matrix changing the draw coords at random.

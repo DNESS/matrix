@@ -14,9 +14,9 @@ list($width, $height) = getimagesize($file);
 $scale = 10;
  
 $chars = array(
-    'P', '\'', '.', ' ',
-    ' ', '8', ' ', 'T',
-    '#',
+    'P', '\'', '-', '+',
+    '.', '*', ' ', ' ',
+    ' ',
 );
  
 $chars = array_reverse($chars);
