@@ -6,7 +6,7 @@ The matrix for your terminal.
 
 ## Requirements
 
-* [XPSPL](http://xpspl.prggmr.org/ "XPSPL")
+* [XPSPL](http://github.com/prggmr/xpspl/ "XPSPL")
 
 ## Installation
 
@@ -19,7 +19,7 @@ Install to bin.
 
 ```sh
 
-sudo ln -s $HOME/.matrix/matrix /usr/bin
+sudo ln -s $HOME/.matrix/matrix /usr/local/bin
 ```
 
 Then run
@@ -38,9 +38,3 @@ Turn the ```-f``` option on to see the performance stats.
 
 To achieve microsecond cycles simply set the interval ```-i``` to one number +/- the ```AVG Process Time``` and adjust 
 so it stays above negative.
-
-## Memory
-
-There currently exists a memory leak ... somewhere ... maybe you can find it ... 
-
-The leak is rather small and adds rather slowely ... but it exists!!
