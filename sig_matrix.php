@@ -50,6 +50,12 @@ class SIG_Matrix extends SIG_Awake {
     public $draw = [];
 
     /**
+     * Chop off length for logs.
+     *
+     */
+    public $chop = 0;
+
+    /**
      * Constructor
      *
      * Gets the number of columns and rows to draw and sets the SIG_Awake's

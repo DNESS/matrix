@@ -39,6 +39,9 @@ function get_char($space = null, $char = null) {
     if ($space || null === $space && mt_rand(0, 10) >= 3) {
         return MATRIX_SPACE_CHAR;
     }
+    return call_user_func(function(){
+        return MATRIX_CHARACTERS;
+    })[mt_rand(0, 64)];
     if (mt_rand(0, 10) >= 5) {
         return (mt_rand(0, 10) >= 5) ? '0' : MATRIX_COLOR_CHAR;
     } else {

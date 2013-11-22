@@ -8,12 +8,12 @@
           <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
         </Transforms>
         <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-        <DigestValue>T/iY8kL0HQ4tbjpKXBJIw3OiYExqwqnE9mssOhndhdw=</DigestValue>
+        <DigestValue>LGAd7xLzzUosIZILR0dv0b2wZGN8H9PsW+vbSDJB/20=</DigestValue>
       </Reference>
     </SignedInfo>
-    <SignatureValue Id="PackageSignatureValue">RMxjteHjLUzNc0j0o4dQy8HkUo5y0JdFiNnG1ZQ02RvSYHMESPqdF2W/7ZcPLXxh3+2MKKljhNR1
-dNnxNKzNHC3OYWp0tLT0WWwyAyXL42PLEPh2jt+9PDWy3JyhPbpTyokyYJmypMBCPzJL75EJ3VLv
-QoZaJyli22Oh7GsfYvM=</SignatureValue>
+    <SignatureValue Id="PackageSignatureValue">LGoBx/gp1+lnLl+Ju70H3gURxIT170lSHicaIHaOn+AEqHg7TV/f3n5b7KS0OwN6VAGe6qRujxvV
+eeCvEVn+w0EDoh7hkQ1Ia26KsdmsgPeA6COvEY6pYqkSWboq/2ZA3hKeFuedonvXzSTv1MzBj2Oe
++06od7Txa5LBNrjnyJo=</SignatureValue>
     <KeyInfo>
       <X509Data>
         <X509Certificate>MIIBzjCCATagAwIBAgIbLTNmYjFjN2YwOjEzZDZhMzUzOWJlOi04MDAwMA0GCSqGSIb3DQEBBQUA
@@ -29,7 +29,7 @@ D94ow8yiWGMxR2A8OqCHipvAt4/EUC5/8kiY4z2Nhmj3mLURkgkf8QSdUabKu4YOVD+STQCG6AE+
     </KeyInfo>
     <Object>
       <Manifest Id="PackageContents">
-        <Reference URI="mimetype"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>0/oCb84THKMagtI0Dy0KogEu92TegdesqRr/clXct1c=</DigestValue></Reference><Reference URI="META-INF/AIR/application.xml"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>BvfFZez/h/ubEjGl5xQCJuzyQQkt1nwC+S6wjRKfWEs=</DigestValue></Reference><Reference URI="AsciiCam.swf"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>5kYo7c1V0ECQszvaoRsFO34MUGHiMbu1KWP1o9R46E4=</DigestValue></Reference>
+        <Reference URI="mimetype"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>0/oCb84THKMagtI0Dy0KogEu92TegdesqRr/clXct1c=</DigestValue></Reference><Reference URI="META-INF/AIR/application.xml"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>BvfFZez/h/ubEjGl5xQCJuzyQQkt1nwC+S6wjRKfWEs=</DigestValue></Reference><Reference URI="AsciiCam.swf"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>hcXwvkwDpXyC7upP+RVPv6w1DxwpifV50SZWEQZ/DTQ=</DigestValue></Reference>
       </Manifest>
     </Object>
     

@@ -17,6 +17,17 @@ set_include_path(
     get_include_path()
 );
 
+$file_locations = [
+    '/' => ['draw_coordinate', 'process', 'sig_matrix'],
+    'letters/' => ['letter','a','i','n','o'],
+];
+
+foreach ($file_locations as $path => $files) {
+    foreach ($files as $file) {
+        require_once dirname(realpath(__FILE__)).'/'.$path.$file.'.php';        
+    }
+}
+
 require_once dirname(realpath(__FILE__)).'/utils.php';
 
 set_signal_history(false);
@@ -25,11 +36,12 @@ define('MATRIX_DRAW_CHAR', get_color('H'));
 define('MATRIX_COLOR_CHAR', '0');
 define('MATRIX_FADE_CHAR', '*');
 define('MATRIX_SPACE_CHAR', " ");
+define('MATRIX_CHARACTERS', 'abcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=!@#$%^&*({}|:"<>?,./;\'[]\\');
 
 if (XPSPL_DEBUG) {
     $speed = 1;
 } else {
-    $speed = 100;
+    $speed = 180;
 }
 
 
