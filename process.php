@@ -60,13 +60,13 @@ class Process extends \XPSPL\Process {
                                         // $sig->matrix[$y][$x] = get_char();
                                     // } else {
                                     // if (isset($sig->matrix[($y-1)][$x])) { 
-                                    if (mt_rand(0, 10) > 4) {
+                                    if (mt_rand(0, 10) > 8) {
                                         if (isset($sig->matrix[($y-1)][$x])) {
                                             $sig->matrix[$y][$x] = $sig->matrix[($y - 1)][$x];
                                         }
                                     } else {
                                         if (mt_rand(0, 10) == 10) {
-                                            $sig->matrix[$y][$x] = get_char();
+                                            // $sig->matrix[$y][$x] = get_char();
                                         }
                                     }
                                     // } else {
@@ -97,14 +97,20 @@ class Process extends \XPSPL\Process {
             if ($average > 0) {
                 if ($average < 1) {
                     $instruction = TIME_MICROSECONDS;
-                    $average = $average * 1000;
                 } else {
                     $instruction = TIME_MILLISECONDS;
                 }
-                current_signal()->modify_time(
-                    $average,
-                    $instruction
-                );
+                if (count($sig->average) > 5) {
+                    // current_signal()->modify_time(
+                    //     $average,
+                    //     $instruction
+                    // );
+                }
+            }
+            if (count($sig->average) >= 1000000) {
+                for($i=0;$i<50000;$i++) {
+                    array_shift($sig->average);
+                }
             }
         }
         $sub_rows = 0;

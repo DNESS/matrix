@@ -38,14 +38,8 @@ define('MATRIX_FADE_CHAR', '*');
 define('MATRIX_SPACE_CHAR', " ");
 define('MATRIX_CHARACTERS', 'abcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=!@#$%^&*({}|:"<>?,./;\'[]\\');
 
-if (XPSPL_DEBUG) {
-    $speed = 1;
-} else {
-    $speed = 180;
-}
 
-
-$matrix = new matrix\SIG_Matrix($speed);
+$matrix = new matrix\SIG_Matrix(120);
 
 /**
  * Register the matrix into the processor.
