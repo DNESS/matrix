@@ -10,9 +10,9 @@ define('MATRIX_MASTERMIND', 'Nickolas Whiting');
 
 
 // DISABLE HISTORY
-set_signal_history(false);
+xp_set_signal_history(false);
 
-import('time');
+xp_import('time');
 
 /**
  * The fucking matrix ... this shit is awesome ... nuff said.
@@ -58,6 +58,7 @@ $color_use = '3';
 $shift = false;
 $speed = 85;
 $symbols = array_merge(str_split('~!@#$%^&*()_+-=[]\{}|<>?,./;\':'), range('A', 'Z'));
+// $symbols = str_split(mb_detect_encoding('夏でも底に冷たさをもつ青いそら', "UTF-8,ISO-8859-1"));
 $modulus = 2;
 // parse args and check for options
 foreach ($options as $_i => $_arg) {
@@ -153,14 +154,14 @@ function get_color($char, $color = null) {
 
 if ($shift) {
     // Wake every x speed and shift colors
-    time\awake($speed, null_exhaust(function() use ($color_codes){
+    time\awake($speed, function() use ($color_codes){
         global $color_use;
         $color_use = $color_codes[array_rand($color_codes)];
-    }), TIME_MILLISECONDS);
+    }, TIME_MILLISECONDS);
 }
 
 /**
- * Returns 
+ * Returns
  * @param  boolean $space [description]
  * @return [type]         [description]
  */
@@ -186,10 +187,10 @@ if (null !== $ttr) {
 
 /**
  * Performs a time awake signal process for creating the matrix,
- * 
+ *
  * @signal  time\awake
  */
-time\awake($speed, null_exhaust(function($matrix) use (
+time\awake($speed, function($matrix) use (
         $fps, $modulus, $color_use, $speed
     ){
     if (!isset($matrix->matrix)) {
@@ -295,7 +296,7 @@ time\awake($speed, null_exhaust(function($matrix) use (
                     $matrix->current = $matrix->current . PHP_EOL . 'AVG Process Time : '. $average . ' (ms)';
                     $matrix->current = $matrix->current . PHP_EOL . 'Size : ' . $matrix->columns . 'x' . $matrix->rows;
                     $matrix->current = $matrix->current . PHP_EOL . 'Event : ' . spl_object_hash($matrix);
-                    $matrix->current = $matrix->current . PHP_EOL . 'History : ' . count(signal_history());
+                    $matrix->current = $matrix->current . PHP_EOL . 'History : ' . count(xp_signal_history());
                     $matrix->average = [];
                 }
                 $output .= PHP_EOL . $matrix->current;
@@ -305,14 +306,14 @@ time\awake($speed, null_exhaust(function($matrix) use (
                     if (null == $matrix->matrix[$y][$x]) {
                         $output .= " ";
                     } else {
-                        $output .= $matrix->matrix[$y][$x];
+                        $output .= utf8_encode($matrix->matrix[$y][$x]);
                     }
                 }
             }
         }
     // } else {
     //     if ($matrix->iteration <= count($matrix->message)) {
-    //         $matrix->msg_out .= get_color($matrix->message[$matrix->iteration]); 
+    //         $matrix->msg_out .= get_color($matrix->message[$matrix->iteration]);
     //     } else {
     //         $matrix->msg_out .= get_color(".");
     //     }
@@ -332,4 +333,4 @@ time\awake($speed, null_exhaust(function($matrix) use (
     $matrix->last_render_time = $start;
     echo $output;
     $matrix->iteration++;
-}), TIME_MILLISECONDS);
+}, TIME_MILLISECONDS);
