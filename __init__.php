@@ -12,14 +12,18 @@ define('MATRIX_MASTERMIND', 'Nickolas Whiting');
 if (!defined('MATRIX_PATH')) {
     define('MATRIX_PATH', dirname(realpath(__FILE__)));
 }
-set_include_path(
-    MATRIX_PATH . '/..' . PATH_SEPARATOR . 
-    get_include_path()
-);
+
+$require = [
+    'sig_matrix', 'process', 'draw_coordinate'
+];
 
 require_once dirname(realpath(__FILE__)).'/utils.php';
 
-set_signal_history(false);
+foreach ($require as $_r) {
+    require_once dirname(realpath(__FILE__)).'/src/'.$_r.'.php';
+}
+
+xp_set_signal_history(false);
 
 define('MATRIX_DRAW_CHAR', get_color('H'));
 define('MATRIX_COLOR_CHAR', '0');
@@ -37,40 +41,40 @@ $matrix = new matrix\SIG_Matrix($speed);
 
 /**
  * Register the matrix into the processor.
- * 
+ *
  * @signal  time\awake
  */
-signal(
-    $matrix, 
+xp_signal(
+    $matrix,
     new matrix\Process()
 );
 
 $down = 15;
 $left = 45;
 
-import('network');
+// import('network');
 
-$server = network\connect('0.0.0.0', ['port' => '1337']);
-$server->on_connect(null_exhaust(function(network\SIG_Connect $sig) use ($matrix){
-    $std = new stdClass();
-    $std->rows = $matrix->rows;
-    $std->cols = $matrix->columns;
-    $std->time = $matrix->get_time();
-    $sig->socket->write(json_encode($std));
-    $sig->socket->read();
-}));
-$server->on_read(null_exhaust(function(network\SIG_Read $sig_read) use ($matrix) {
-    $read = trim($sig_read->socket->read());
-    if (strlen($read) > 10) {
-        $matrix->set_draw_coordinates(parse_ascii_art($read, false), true);
-    }
-}));
-$server->on_disconnect(null_exhaust(function(network\SIG_Disconnect $sig) use ($matrix) {
-    $socket = intval($sig_read->socket);
-    if (isset($matrix->neros[$socket])) {
-        unset($matrix->neros[$socket]);
-    }
-}));
+// $server = network\connect('0.0.0.0', ['port' => '1337']);
+// $server->on_connect(null_exhaust(function(network\SIG_Connect $sig) use ($matrix){
+//     $std = new stdClass();
+//     $std->rows = $matrix->rows;
+//     $std->cols = $matrix->columns;
+//     $std->time = $matrix->get_time();
+//     $sig->socket->write(json_encode($std));
+//     $sig->socket->read();
+// }));
+// $server->on_read(null_exhaust(function(network\SIG_Read $sig_read) use ($matrix) {
+//     $read = trim($sig_read->socket->read());
+//     if (strlen($read) > 10) {
+//         $matrix->set_draw_coordinates(parse_ascii_art($read, false), true);
+//     }
+// }));
+// $server->on_disconnect(null_exhaust(function(network\SIG_Disconnect $sig) use ($matrix) {
+//     $socket = intval($sig_read->socket);
+//     if (isset($matrix->neros[$socket])) {
+//         unset($matrix->neros[$socket]);
+//     }
+// }));
 
 // create_ascii_animation('drawfiles/animations/stealth.txt', 110, $matrix, null, TIME_MILLISECONDS);
 

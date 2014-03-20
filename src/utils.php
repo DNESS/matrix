@@ -7,10 +7,10 @@
 
 /**
  * Returns a character wrapped in the provided color code.
- * 
+ *
  * @param  [type] $char  [description]
  * @param  [type] $color [description]
- * 
+ *
  * @return [type]        [description]
  */
 function get_color($char, $color = '37') {
@@ -28,7 +28,7 @@ function get_color($char, $color = '37') {
 
 /**
  * Returns a character.
- * 
+ *
  * @param  boolean $space [description]
  * @return [type]         [description]
  */
@@ -48,7 +48,7 @@ function get_char($space = null, $char = null) {
 
 /**
  * Fills draw value coordinates.
- * 
+ *
  * @return  array
  */
 function fill_draw_values()
@@ -65,7 +65,7 @@ function fill_draw_values()
 
 /**
  * @experimental
- * 
+ *
  * Returns the last bit drawn that is not a space on the given x,y.
  *
  * If none is encountered a random get_char is returned.

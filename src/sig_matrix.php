@@ -6,7 +6,7 @@ namespace matrix;
  * that can be found in the LICENSE file.
  */
 
-import('time');
+xp_import('time');
 
 use time\SIG_Awake;
 
