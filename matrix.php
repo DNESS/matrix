@@ -56,7 +56,7 @@ $fps = false;
 $ttr = null;
 $color_use = '3';
 $shift = false;
-$speed = 85;
+$speed = 30;
 $symbols = array_merge(str_split('~!@#$%^&*()_+-=[]\{}|<>?,./;\':'), range('A', 'Z'));
 // $symbols = str_split(mb_detect_encoding('夏でも底に冷たさをもつ青いそら', "UTF-8,ISO-8859-1"));
 $modulus = 2;
@@ -139,6 +139,8 @@ if (XPSPL_DEBUG) {
     $fps = true;
 }
 
+$fps = false;
+
 function get_color($char, $color = null) {
     global $color_use;
     if (null === $color) {
@@ -185,13 +187,29 @@ if (null !== $ttr) {
 }
 // $screen = fopen(STDOUT, 'w+');
 
+
+// Init
+ncurses_init();
+ncurses_curs_set(0);
+// Create window (rows,cols,top,left)
+$screen = ncurses_newwin(0, 0, 0, 0);
+// while(true) {
+//     // Redraw screen
+//     ncurses_mvwaddstr($screen, 0, 0, "LXF69" . rand(0, 1000000));
+//     ncurses_mvwaddstr($screen, 0, 0, "LXF69" . rand(0, 1000000));
+//     ncurses_wrefresh($screen);
+// }
+// Wait for key input
+// ncurses_wgetch($screen);
+// end the screen
+
 /**
  * Performs a time awake signal process for creating the matrix,
  *
  * @signal  time\awake
  */
 time\awake($speed, function($matrix) use (
-        $fps, $modulus, $color_use, $speed
+        $fps, $modulus, $color_use, $speed, $screen
     ){
     if (!isset($matrix->matrix)) {
         // rows
@@ -299,14 +317,14 @@ time\awake($speed, function($matrix) use (
                     $matrix->current = $matrix->current . PHP_EOL . 'History : ' . count(xp_signal_history());
                     $matrix->average = [];
                 }
-                $output .= PHP_EOL . $matrix->current;
+                ncurses_mvwaddstr($screen, 0, 0, $matrix->current);
             } else {
                 $xlength = count($matrix->matrix[$y]);
                 for ($x = 0;$x != $xlength; $x++ ){
                     if (null == $matrix->matrix[$y][$x]) {
-                        $output .= " ";
+                        ncurses_mvwaddstr($screen, $y, $x, " ");
                     } else {
-                        $output .= utf8_encode($matrix->matrix[$y][$x]);
+                        ncurses_mvwaddstr($screen, $y, $x, $matrix->matrix[$y][$x]);
                     }
                 }
             }
@@ -331,6 +349,6 @@ time\awake($speed, function($matrix) use (
     //     }
     // }
     $matrix->last_render_time = $start;
-    echo $output;
     $matrix->iteration++;
+    ncurses_wrefresh($screen);
 }, TIME_MILLISECONDS);
