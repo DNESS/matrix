@@ -7,6 +7,7 @@ The matrix for your terminal.
 ## Requirements
 
 * [XPSPL](http://github.com/prggmr/xpspl/ "XPSPL")
+* [ncurses](http://www.php.net/manual/en/book.ncurses.php "ncurses")
 
 ## Installation
 
