@@ -38,8 +38,12 @@ define('MATRIX_FADE_CHAR', '*');
 define('MATRIX_SPACE_CHAR', " ");
 define('MATRIX_CHARACTERS', 'abcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=!@#$%^&*({}|:"<>?,./;\'[]\\');
 
-
+// ncurses
+ncurses_init();
+ncurses_curs_set(0);
+// Create window (rows,cols,top,left)
 $matrix = new matrix\SIG_Matrix(120);
+$matrix->screen = ncurses_newwin(0, 0, 0, 0);
 
 /**
  * Register the matrix into the processor.

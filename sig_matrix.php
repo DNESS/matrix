@@ -99,7 +99,8 @@ class SIG_Matrix extends SIG_Awake {
                 }
                 $coordinates[$_y] = $new_x;
             }
-            $y = floor(($this->rows - end(array_keys($coordinates))) / 2);
+            $keys = array_keys($coordinates);
+            $y = floor(($this->rows - end($keys)) / 2);
             $new_coordinates = [];
             foreach ($coordinates as $_y => $_xs) {
                 $new_coordinates[$_y + $y] = $_xs;

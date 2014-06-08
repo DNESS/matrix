@@ -145,11 +145,10 @@ class Process extends \XPSPL\Process {
         $c = (!XPSPL_DEBUG) ? $sig->rows - 1 : ($sig->rows - $sig->chop);
         for ($y = 0; $y <= $c; $y++) {
             for ($x = 0;$x < $sig->columns; $x++ ){
-                $output .= $sig->matrix[$y][$x];
+                ncurses_mvwaddstr($sig->screen, $y, $x, $sig->matrix[$y][$x]);
                 // $output .= " ";
             }
-            $output .= PHP_EOL;
         }
-        echo $output;
+        ncurses_wrefresh($sig->screen);
     }
 }
