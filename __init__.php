@@ -72,7 +72,7 @@ $server->on_connect(null_exhaust(function(network\SIG_Connect $sig) use ($matrix
 $server->on_read(null_exhaust(function(network\SIG_Read $sig_read) use ($matrix) {
     $read = trim($sig_read->socket->read());
     if (strlen($read) > 10) {
-        $matrix->set_draw_coordinates(parse_ascii_art($read, false), true);
+        $matrix->set_draw_coordinates(parse_ascii_art($read, false), false);
     }
 }));
 $server->on_disconnect(null_exhaust(function(network\SIG_Disconnect $sig) use ($matrix) {

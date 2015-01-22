@@ -43,7 +43,7 @@ class Process extends \XPSPL\Process {
         }
         $start = milliseconds();
         // for ($y = $sig->rows; $y >= 0 ; --$y) {
-       for ($i=0;$i<=$sig->columns;$i++) {
+        for ($i=0;$i<=$sig->columns;$i++) {
             if (isset($sig->mtx[$i][0]) && $sig->mtx[$i][0] <= 0) {
                 $sig->mtx[$i] = [rand($sig->rows, $sig->rows * 2), (rand(0, 10)>=4)];
             }
@@ -52,6 +52,9 @@ class Process extends \XPSPL\Process {
             }
         }
         $start = milliseconds();
+        if (count($sig->draw) >= 1) {
+            $sig->matrix = $sig->draw;
+        } else {
         for ($y = $sig->rows; $y >= 0 ; $y--) {
             for ($x = 0; $x <= $sig->columns - 1; $x++) {
                 if (isset($sig->draw[$y][$x])) {
@@ -100,6 +103,7 @@ class Process extends \XPSPL\Process {
                     }
                 }
             }
+        }
         }
         $end = milliseconds();
         // Matrix load
@@ -163,7 +167,7 @@ class Process extends \XPSPL\Process {
         $c = (!XPSPL_DEBUG) ? $sig->rows - 1 : ($sig->rows - $sig->chop);
         for ($y = 0; $y <= $c; $y++) {
             for ($x = 0;$x < $sig->columns; $x++ ){
-                ncurses_mvwaddstr($sig->screen, $y, $x, $sig->matrix[$y][$x]);
+                ncurses_mvwaddstr($sig->screen, $y, $x, @$sig->matrix[$y][$x]);
                 // $output .= " ";
             }
         }

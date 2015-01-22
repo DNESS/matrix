@@ -125,7 +125,7 @@ function parse_ascii_art($ascii, $color = false)
             if ($_char == " ") {
                 continue;
             }
-            $coord[$_y][$_x] = (!$color) ? $_char : get_color($_char);
+            $coord[$_y][$_x] = $_char;//(!$color) ? $_char : get_color($_char);
         }
     }
     return $coord;
