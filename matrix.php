@@ -56,7 +56,7 @@ $fps = false;
 $ttr = null;
 $color_use = '3';
 $shift = false;
-$speed = 30;
+$speed = 0;
 $symbols = array_merge(str_split('~!@#$%^&*()_+-=[]\{}|<>?,./;\':'), range('A', 'Z'));
 // $symbols = str_split(mb_detect_encoding('夏でも底に冷たさをもつ青いそら', "UTF-8,ISO-8859-1"));
 $modulus = 2;
@@ -135,43 +135,15 @@ foreach ($options as $_i => $_arg) {
     }
 };
 
-if (XPSPL_DEBUG) {
-    $fps = true;
-}
-
-$fps = false;
-
-function get_color($char, $color = null) {
-    global $color_use;
-    if (null === $color) {
-        $color = $color_use;
-    }
-    if (rand(0, 10)>=9 || $color == '37') {
-        $bold = '1;';
-    } else {
-        $bold = '';
-    }
-    return "\033[".$bold.$color."m".$char."\033[0m";
-}
-
-if ($shift) {
-    // Wake every x speed and shift colors
-    time\awake($speed, function() use ($color_codes){
-        global $color_use;
-        $color_use = $color_codes[array_rand($color_codes)];
-    }, TIME_MILLISECONDS);
-}
-
 /**
  * Returns
  * @param  boolean $space [description]
  * @return [type]         [description]
  */
 function get_char($space = true) {
-    global $symbols;
     // Characters
-    $range = $symbols;
-    if ($space) return " ";
+    $range = array_merge(str_split('~!@#$%^&*()_+-=[]\{}|<>?,./;\':'), range('A', 'Z'));
+    // if ($space) return " ";
     $char = $range[array_rand($range)];
     return $char;
 }
@@ -185,38 +157,35 @@ if (null !== $ttr) {
         shutdown();
     }, $ttr);
 }
-// $screen = fopen(STDOUT, 'w+');
 
 
-// Init
+// // Init
 ncurses_init();
 ncurses_curs_set(0);
-// Create window (rows,cols,top,left)
 $screen = ncurses_newwin(0, 0, 0, 0);
-// while(true) {
-//     // Redraw screen
-//     ncurses_mvwaddstr($screen, 0, 0, "LXF69" . rand(0, 1000000));
-//     ncurses_mvwaddstr($screen, 0, 0, "LXF69" . rand(0, 1000000));
-//     ncurses_wrefresh($screen);
-// }
-// Wait for key input
-// ncurses_wgetch($screen);
-// end the screen
 
 /**
  * Performs a time awake signal process for creating the matrix,
  *
  * @signal  time\awake
  */
-time\awake($speed, function($matrix) use (
-        $fps, $modulus, $color_use, $speed, $screen
-    ){
+$threads = 12;
+$columns = exec('tput cols');
+$rows = exec('tput lines');
+
+$columns_per_thread = floor($columns / 12);
+$overage = $columns / $columns_per_thread;
+if ($overage > $threads) {
+    $additional = round($overage - $threads);
+    if ($additional == 0) {
+        $additional = 1;
+    }
+} else {
+    $additional = 0;
+}
+function matrix($signal, $thread) {
+    $matrix = $thread->matrix;
     if (!isset($matrix->matrix)) {
-        // rows
-        $matrix->columns = exec('tput cols');
-        $matrix->rows = exec('tput lines');
-        // Count
-        $matrix->iteration = 0;
         // the current matrix
         $matrix->matrix = [];
         // movement
@@ -225,37 +194,30 @@ time\awake($speed, function($matrix) use (
         $matrix->lines = [];
         // white head
         $matrix->cols = [];
-        // welcome message
-        $matrix->message = str_split(MESSAGE);
-        $matrix->msg_out = '';
-        // average run speed
-        $matrix->average = [];
-        // current average run speed
-        $matrix->current = 0.0000000000000000000000000000;
     }
-    for ($i=0;$i<=$matrix->columns;$i++) {
+    for ($i=0;$i<=$thread->columns;$i++) {
         if (isset($matrix->mtx[$i][0]) && $matrix->mtx[$i][0] <= 0) {
-            $matrix->mtx[$i] = [rand($matrix->rows, $matrix->rows * 2), (rand(0, 10)>=4)];
+            $matrix->mtx[$i] = [rand($thread->rows, $thread->rows * 2), (rand(0, 10)>=4)];
         }
         if (isset($matrix->lines[$i][0]) && $matrix->lines[$i][0] <= 0) {
             $matrix->lines[$i] = [rand(10, 15), rand(0, 10) >= 6, true];
         }
     }
-    $start = milliseconds();
-    for ($y = $matrix->rows; $y >= 0 ; $y--) {
-        for ($x = 0; $x <= $matrix->columns - 1; $x++) {
+    for ($y = $thread->rows; $y >= 0 ; $y--) {
+        for ($x = 0; $x <= $thread->columns - 1; $x++) {
             if (isset($matrix->mtx[$x][0])){
                 --$matrix->mtx[$x][0];
             } else {
-                $matrix->mtx[$x][0] = $matrix->columns;
+                $matrix->mtx[$x][0] = $thread->columns;
             }
             if (!isset($matrix->matrix[$y][$x]) || $y == 0) {
                 if (isset($matrix->lines[$x][0])) {
                     --$matrix->lines[$x][0];
                 } else {
-                    $matrix->lines[$x][0] = $matrix->rows;
+                    $matrix->lines[$x][0] = $thread->rows;
                 }
                 $char = (isset($matrix->lines[$x][1]) && $matrix->lines[$x][1]) ? get_char(false) : get_char(true);
+                // var_dump($char);
                 $matrix->matrix[$y][$x] = $char;
             } elseif (isset($matrix->mtx[$x][1]) && $matrix->mtx[$x][1]) {
                 $newchar = $matrix->matrix[$y - 1][$x];
@@ -263,16 +225,12 @@ time\awake($speed, function($matrix) use (
                     $matrix->cols[$x] = $y;
                 }
                 if (isset($matrix->cols[$x]) && $matrix->cols[$x] == $y) {
-                    $color = '37';
                     ++$matrix->cols[$x];
                     if ($newchar != " ") {
                         $newchar = get_char(false);
                     }
-                } else {
-                    $force = false;
-                    $color = $color_use;
                 }
-                if ($x % $modulus) {
+                if ($x % $matrix->modulus) {
                     $matrix->matrix[$y][$x] = " ";
                 } else {
                     $matrix->matrix[$y][$x] = $newchar;
@@ -288,67 +246,51 @@ time\awake($speed, function($matrix) use (
             }
         }
     }
-    $end = milliseconds();
     // Load the matrix
-    // if ($matrix->iteration >= ($matrix->rows + count($matrix->message))) {
-        $output = "";
-        for ($y = 0; $y <= $matrix->rows - 1; $y++) {
-            if ($fps && $y == $matrix->rows - 1) {
-                $matrix->average[] = $start - $end;
-                if (count($matrix->average) >= rand(10, 50)) {
-                    $average = $end - $start;
-                    $matrix->current = $speed - ($end - $start);
-                    if ($matrix->current < 1) {
-                        if ($matrix->current > 0) {
-                            $matrix->current = 'Buffer Left (us) : ' . ($matrix->current * 100);
-                        } else {
-                            $matrix->current = 'Overflow (ms) : ' . $matrix->current;
-                        }
-                    } else {
-                        $matrix->current = 'Buffer Left (ms) : ' . $matrix->current;
-                    }
-                    $matrix->current = $matrix->current . PHP_EOL . 'Next Proces Time : '. xpspl()
-                    ->get_routine()
-                    ->get_idle()->get_idle()
-                    ->get_time_until() . ' (ms)';
-                    $matrix->current = $matrix->current . PHP_EOL . 'AVG Process Time : '. $average . ' (ms)';
-                    $matrix->current = $matrix->current . PHP_EOL . 'Size : ' . $matrix->columns . 'x' . $matrix->rows;
-                    $matrix->current = $matrix->current . PHP_EOL . 'Event : ' . spl_object_hash($matrix);
-                    $matrix->current = $matrix->current . PHP_EOL . 'History : ' . count(xp_signal_history());
-                    $matrix->average = [];
-                }
-                ncurses_mvwaddstr($screen, 0, 0, $matrix->current);
-            } else {
-                $xlength = count($matrix->matrix[$y]);
-                for ($x = 0;$x != $xlength; $x++ ){
-                    if (null == $matrix->matrix[$y][$x]) {
-                        ncurses_mvwaddstr($screen, $y, $x, " ");
-                    } else {
-                        ncurses_mvwaddstr($screen, $y, $x, $matrix->matrix[$y][$x]);
-                    }
-                }
-            }
+    // if ($matrix->iteration >= ($thread->rows + count($matrix->message))) {
+    // Mutex::lock($thread->mutex);
+    // var_dump($matrix);
+    for ($y = 0; $y <= $thread->rows - 1; $y++) {
+        $xlength = count($matrix->matrix[$y]);
+        for ($x = 0;$x != $xlength; $x++ ){
+            // echo $x . " " . $y . PHP_EOL;
+            // print $matrix->matrix[$y][$x];
+            // print $x+($thread->thread_id * $thread->columns_per_thread).PHP_EOL;
+            // if (null == $matrix->matrix[$y][$x]) {
+            //     ncurses_mvwaddstr($thread->screen, $y, $x, "A");
+            // } else {
+                ncurses_mvwaddstr($thread->screen, $y, $x, "A");
+            // }
         }
-    // } else {
-    //     if ($matrix->iteration <= count($matrix->message)) {
-    //         $matrix->msg_out .= get_color($matrix->message[$matrix->iteration]);
-    //     } else {
-    //         $matrix->msg_out .= get_color(".");
-    //     }
-    //     $float = (($matrix->iteration + 1) / (count($matrix->message) + ($matrix->rows)));
-    //     $percentage = round($float * 100, 0);
-    //     $output = $matrix->msg_out . PHP_EOL . get_color("$percentage% [");
-    //     $bar_width = $matrix->columns - 10;
-    //     $bar_count = round($bar_width * $float, 0);
-    //     $output .= str_repeat(get_color("="), $bar_count);
-    //     $output .= str_repeat(" ", $bar_width - $bar_count);
-    //     $output .= get_color("]");
-    //     for ($y = 0; $y <= $matrix->rows - 4; $y++) {
-    //         $output .= str_repeat(" ", $matrix->columns);
-    //         $output .= PHP_EOL;
-    //     }
-    // }
-    $matrix->last_render_time = $start;
-    $matrix->iteration++;
+    }
     ncurses_wrefresh($screen);
-}, TIME_MILLISECONDS);
+    // print "END";
+    // Mutex::unlock($thread->mutex);
+
+}
+
+// $mutex = Mutex::create();
+for ($i=0;$i<=$threads;$i++) {
+    $mtx_object = new stdClass();
+    $thread_id = $i;
+    if ($i == $threads) {
+        $columns_per_thread += $additional;
+    }
+    // create the threads
+    $matrix = new time\SIG_Awake($speed, TIME_MILLISECONDS);
+    $process = xp_threaded_process('matrix');
+    $process->thread_vars = [
+        'screen' => $screen,
+        'modulus' => $modulus,
+        'columns_per_thread' => $columns_per_thread,
+        'thread_id' => $i,
+        'columns' => $columns_per_thread,
+        'rows' => $rows,
+        // 'mutex' => $mutex,
+        'matrix' => $mtx_object
+    ];
+    xp_signal($matrix, $process);
+}
+// time\awake(0, function() use ($screen){
+//     ncurses_wrefresh($screen);
+// });
